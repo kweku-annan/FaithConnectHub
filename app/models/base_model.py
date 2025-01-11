@@ -6,10 +6,24 @@ from datetime import datetime
 
 class BaseModel:
     """The Base Model Class of this project"""
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """Initializes Attributes"""
-        self.id = str(uuid.uuid4()) # Assign when an instance is created
-        self.created_at = self.updated_at = datetime.now()
+        if kwargs is not None and len(kwargs) != 0:
+            for key in kwargs:
+                if key == "id":
+                    self.id = kwargs[key]
+                elif key == "created_at":
+                    self.created_at = datetime.strptime(kwargs[key],
+                                                        "%Y-%m-%dT%H:%M:%S.%f")
+                elif key == "updated_at":
+                    self.updated_at = datetime.strptime(kwargs[key],
+                                                        "%Y-%m-%dT%H:%M:%S.%f")
+                else:
+                    if key != "__class__":
+                        setattr(self, key, kwargs[key])
+        else:
+            self.id = str(uuid.uuid4()) # Assign when an instance is created
+            self.created_at = self.updated_at = datetime.now()
 
     def __str__(self):
         """Returns [<class name>] (<self.id>) <self.__dict__>"""
