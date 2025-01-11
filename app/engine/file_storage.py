@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """File storage model"""
 import json
+from app.models.base_model import BaseModel
 
 
 class FileStorage:
@@ -8,13 +9,9 @@ class FileStorage:
     __file_path = "file.json"
     __objects = {}
 
-    def __init__(self):
-        """Initializes public attributes"""
-        pass
-
     def all(self):
         """Returns the dictionary __objects"""
-        return FileStorage.__file_path
+        return FileStorage.__objects
 
     def new(self, obj):
         """Sets in __objects the obj with key <obj class name>.id"""
@@ -37,7 +34,8 @@ class FileStorage:
                       encoding='utf-8') as a_file:
                 a_dict = json.load(a_file)
             for key, value in a_dict.items():
-                FileStorage.__objects[key] = eval(value['__class__'])(**value)
+                attri_value = eval(value["__class__"])(**value)
+                FileStorage.__objects[key] = attri_value
         except FileNotFoundError:
             pass
 

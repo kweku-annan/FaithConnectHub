@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Base Model of FaithConnect Hub"""
 import uuid
+from app import models
 from datetime import datetime
 
 
@@ -24,6 +25,8 @@ class BaseModel:
         else:
             self.id = str(uuid.uuid4()) # Assign when an instance is created
             self.created_at = self.updated_at = datetime.now()
+            models.storage.new(self)
+
 
     def __str__(self):
         """Returns [<class name>] (<self.id>) <self.__dict__>"""
@@ -33,12 +36,17 @@ class BaseModel:
         """Updates the public instance attribute <update_at> with current
         datetime"""
         self.updated_at = datetime.now()
+        models.storage.save()
 
     def to_dict(self):
         """Returns a dictionary containing all keys/values of __dict__"""
         a_dict = dict(self.__dict__)
         for key in a_dict:
-            if key == "created_at" or key == "updated_at":
-                a_dict[key] = a_dict[key].isoformat()
+            if key == "id":
+                a_dict[key] = self.id
+            elif key == "created_at":
+                a_dict[key] = self.created_at.isoformat()
+            elif key == "updated_at":
+                a_dict[key] = self.updated_at.isoformat()
         a_dict["__class__"] = type(self).__name__
         return a_dict
