@@ -2,11 +2,12 @@
 """File storage model"""
 import json
 from app.models.base_model import BaseModel
+from app.models.user import User
 
 
 class FileStorage:
     """Works with making data persistent"""
-    __file_path = "file.json"
+    __file_path = "../file.json"
     __objects = {}
 
     def all(self):
