@@ -4,7 +4,9 @@ import json
 from app.models.base_model import BaseModel
 from app.models.user import User
 from app.models.membership import Membership
-
+from app.models.event import  Event
+from app.models.attendance import Attendance
+from app.models.finance import Expense, Income
 
 class FileStorage:
     """Works with making data persistent"""

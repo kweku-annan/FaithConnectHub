@@ -4,7 +4,10 @@ import cmd
 import shlex
 
 from app.models import storage
+from app.models.attendance import Attendance
 from app.models.base_model import BaseModel
+from app.models.event import Event
+from app.models.finance import Expense, Income
 from app.models.user import User
 from app.models.membership import Membership
 
@@ -15,6 +18,7 @@ class FaithConnectHubCommand(cmd.Cmd):
     prompt = "FaithConnectHub$ "
     classes = {
         'BaseModel': BaseModel, 'User': User, 'Membership': Membership,
+        'Event': Event, 'Expense': Expense, 'Income': Income, 'Attendance': Attendance,
 
     }
 
