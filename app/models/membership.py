@@ -24,13 +24,13 @@ class Membership(BaseModel):
     email = ""
     phone_number = ""
     address = ""
-    date_of_birth = ""
+    date_of_birth = None
     membership_id = ""
-    date_joined = ""
+    date_joined = None
     role_in_church = ""
     department_id = ""
     group_id = ""
-    last_attendance_date = ""
+    last_attendance_date = None
     is_active = True
 
 
