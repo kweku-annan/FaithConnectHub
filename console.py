@@ -6,13 +6,17 @@ import shlex
 from app.models import storage
 from app.models.base_model import BaseModel
 from app.models.user import User
+from app.models.membership import Membership
 
 
 class FaithConnectHubCommand(cmd.Cmd):
     """Class for the entry point of command interpreter"""
 
     prompt = "FaithConnectHub$ "
-    classes = {'BaseModel': BaseModel, 'User': User}
+    classes = {
+        'BaseModel': BaseModel, 'User': User, 'Membership': Membership,
+
+    }
 
     def do_quit(self, args):
         """Exits program using Quit command"""

@@ -26,4 +26,4 @@ class User(BaseModel):
     is_verified = False
     first_name = ""
     last_name = ""
-    contact = ""
+    phone_number = ""
