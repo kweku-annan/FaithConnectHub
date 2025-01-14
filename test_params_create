@@ -6,4 +6,4 @@ create Income amount="3000"
 create Income source="Tithe"
 all Income
 
-create Membership first_name="Emmanuel" last_name="Saah" other_names="Adu" phone_number="2335548" email="kweku@mail.com" date=12.12.25
+create Membership first_name="Emmanuel" last_name="Saah" other_names="Adu" phone_number="2335548" email="kweku@mail.com" date="12/12/25"

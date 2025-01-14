@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Contains the entry point of the command interpreter"""
 import cmd
+import re
 import shlex
 
 from app.models import storage
@@ -35,17 +36,75 @@ class FaithConnectHubCommand(cmd.Cmd):
         """Does nothing"""
         pass
 
+    # def do_create(self, args):
+    #     """Creates a new instance of the BaseModel"""
+    #     if args:
+    #         kwargs = dict()
+    #         args_list = args.split(" ")
+    #
+    #         class_name = args_list[0]
+    #
+    #         if class_name in self.classes:
+    #             if len(args_list) > 1:
+    #                 params = args_list[1:]
+    #                 for param in params:
+    #                     key_value = param.split("=")
+    #                     key = key_value[0]
+    #                     value = key_value[1]
+    #
+    #                     if type(value) is str:
+    #                         value = value.replace('"', '').replace("_", " ")
+    #                     kwargs[key] = value
+    #
+    #                 instance = FaithConnectHubCommand.classes[class_name](**kwargs)
+    #                 print(instance.id)
+    #                 instance.save()
+    #             else:
+    #                 instance = FaithConnectHubCommand.classes[class_name]
+    #                 instance.save()
+    #                 print(instance.id)
+    #         else:
+    #             print("** class name doesn't exist **")
+    #     else:
+    #         print("** class name is missing **")
+
     def do_create(self, args):
-        """Creates a new instance of the BaseModel"""
-        if args:
-            if args in self.classes:
-                instance = eval(args)()
-                print(instance.id)
-                instance.save()
-            else:
-                print("** class name doesn't exist **")
-        else:
-            print("** class name is missing **")
+        """ Create an object of any class"""
+        pattern = """(^\w+)((?:\s+\w+=[^\s]+)+)?"""
+        m = re.match(pattern, args)
+        args = [s for s in m.groups() if s] if m else []
+
+        if not args:
+            print("** class name missing **")
+            return
+
+        class_name = args[0]
+
+        if class_name not in FaithConnectHubCommand.classes:
+            print("** class doesn't exist **")
+            return
+
+        kwargs = dict()
+        if len(args) > 1:
+            params = args[1].split(" ")
+            params = [param for param in params if param]
+            for param in params:
+                [name, value] = param.split("=")
+                if value[0] == '"' and value[-1] == '"':
+                    value = value[1:-1].replace('_', ' ')
+                elif '.' in value:
+                    value = float(value)
+                else:
+                    value = int(value)
+                kwargs[name] = value
+
+        new_instance = FaithConnectHubCommand.classes[class_name]()
+
+        for attr_name, attr_value in kwargs.items():
+            setattr(new_instance, attr_name, attr_value)
+
+        new_instance.save()
+        print(new_instance.id)
 
     def do_show(self, args):
         """Prints the string representation of an instance based on
