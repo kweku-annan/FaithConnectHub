@@ -4,7 +4,7 @@
 CREATE DATABASE IF NOT EXISTS FaithConnectHub_dev_db;
 
 -- Creating a user
-CREATE USER IF NOT EXISTS 'FaithConnectHub_dev'@'localhost' IDENTIFIED BY 'FaithConnectHub_pwd';
+CREATE USER IF NOT EXISTS 'FaithConnectHub_dev'@'localhost' IDENTIFIED BY 'FaithConnectHub_pwd1';
 
 -- Granting privileges to user
 USE FaithConnectHub_dev_db;
