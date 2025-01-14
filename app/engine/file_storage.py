@@ -1,21 +1,22 @@
 #!/usr/bin/python3
 """File storage model"""
 import json
-from app.models.base_model import BaseModel
-from app.models.user import User
-from app.models.membership import Membership
-from app.models.event import  Event
-from app.models.attendance import Attendance
-from app.models.finance import Expense, Income
+
 
 class FileStorage:
     """Works with making data persistent"""
     __file_path = "../file.json"
     __objects = {}
 
-    def all(self):
+    def all(self, cls=None):
         """Returns the dictionary __objects"""
-        return FileStorage.__objects
+        if cls is None:
+            return FileStorage.__objects
+        temp = {}
+        for key, value in self.__objects.items():
+            if type(value) is cls:
+                temp[key] = value
+        return temp
 
     def new(self, obj):
         """Sets in __objects the obj with key <obj class name>.id"""
@@ -33,6 +34,12 @@ class FileStorage:
 
     def reload(self):
         """deserializes the JSON file to __objects"""
+        from app.models.base_model import BaseModel
+        from app.models.user import User
+        from app.models.membership import Membership
+        from app.models.event import Event
+        from app.models.attendance import Attendance
+        from app.models.finance import Expense, Income
         try:
             with open(FileStorage.__file_path, mode='r',
                       encoding='utf-8') as a_file:
@@ -47,5 +54,7 @@ class FileStorage:
         """Deletes obj from __objects if it's inside"""
         if obj is not None:
             obj_key = f'{obj.to_dict()["__class__"]}.{obj.id}'
+            if obj_key in self.__objects.keys():
+                del self.__objects[obj_key]
 
 
