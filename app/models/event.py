@@ -6,11 +6,12 @@ TODO 3: Categorize events by type (e.g., service, workshop).
 TODO 4: Send notifications to members about events.
 """
 
-from app.models.base_model import BaseModel
+from app.models.base_model import BaseModel, Base
 
 
-class Event(BaseModel):
+class Event(BaseModel, Base):
     """Tracks and organizes church events"""
+    __tablename__ = 'events'
     name = ""
     description = ""
     start_date = None
