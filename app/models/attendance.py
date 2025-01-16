@@ -5,10 +5,21 @@ TODO 2: Engagement Analysis: Identify highly engaged members and those who need 
 TODO 3: Reporting: Provide insights such as attendance trends, average attendance, and demographic participation.
 TODO 4: Accountability: Ensure leaders or participants fulfill their commitments.
 """
-from sqlalchemy import Column, ForeignKey, UniqueConstraint, Boolean
+import datetime
+from unittest import defaultTestLoader
+
+from sqlalchemy import Column, ForeignKey, UniqueConstraint, Boolean, String, Time, Enum
 from sqlalchemy.orm import relationship
+from enum import Enum as PyEnum
 
 from app.models.base_model import BaseModel, Base
+
+
+class AttendanceRole(PyEnum):
+    ATTENDEE = 'attendee'
+    LEADER = 'leader'
+    VOLUNTEER = 'volunteer'
+    SPEAKER = 'speaker'
 
 
 class Attendance(BaseModel, Base):
@@ -18,14 +29,30 @@ class Attendance(BaseModel, Base):
     events = relationship('Event', back_populates='attendance_record')
     member_id = Column(ForeignKey('members.id'), nullable=False)
     member = relationship('Membership', back_populates='attendance_record')
+    comments = Column(String(200)) # Additional notes about participation
+
+    # Attendance Details
+    check_in_time = Column(Time)
+    check_out_time = Column(Time)
+    is_present = Column(Boolean, default=True) # For tracking actual people present for a registered event.
+    role = Column(Enum(AttendanceRole), default=AttendanceRole.ATTENDEE)
     attendance_date = ""
     status = ""
 
-    is_present = Column(Boolean, default=True) # For tracking actual people present for a registered event.
+    # Commitment tracking
+    assigned_duties = Column(String(200)) # Track responsibilities
+    fulfilled_duties = Column(Boolean, default=False)
 
 
     __table_args__ = (
         UniqueConstraint('member_id', 'event_id', name='unique_member_service_attendance')
     )
 
+    @property
+    def duration(self):
+        """Calculate attendance duration"""
+        if self.check_in_time and self.check_out_time:
+            return datetime.combine(datetime.today(), self.check_out_time) - \
+                datetime.combine(datetime.today(), self.check_in_time)
+        return None
 
