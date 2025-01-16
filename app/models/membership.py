@@ -28,6 +28,7 @@ class MembershipStatus(PyEnum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     VISITOR = "visitor"
+    FIRST_TIMER = "first_timer"
     TRANSFERRED = "transferred"
 
 
@@ -36,6 +37,7 @@ class MaritalStatus(PyEnum):
     MARRIED = "married"
     DIVORCED = "divorced"
     WIDOWED = "widowed"
+    UNKNOWN = "unknown"
 
 
 class Membership(BaseModel, Base):
@@ -65,6 +67,6 @@ class Membership(BaseModel, Base):
     group_id = Column(ForeignKey('groups.id'), nullable=True)
     groups = relationship('Group', back_populates='members')
     last_attendance_date = ""
-    attendance = relationship('Attendance', back_populates='member')
+    attendance_record = relationship('Attendance', back_populates='member')
 
 
