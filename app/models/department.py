@@ -14,18 +14,126 @@ Features could include:
     Assigning leaders and tracking members for each department.
     Tracking activities, events, and reports for specific ministries.
 """
+from email.policy import default
 
-from sqlalchemy import Column, String
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, Table, ForeignKey, Boolean, Enum, Text, DateTime, Float
+from sqlalchemy.orm import relationship, backref
+from enum import Enum as PyEnum
 
 from app.models.base_model import BaseModel, Base
+
+
+class DepartmentType(PyEnum):
+    MINISTRY = "ministry"
+    UNIT = "unit"
+    COMMITTEE = "committee"
+    WORKFORCE = "workforce"
+
+
+class DepartmentStatus(PyEnum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    ON_HOLD = "on_hold"
+
+
+# Association table for department leaders
+department_leaders = Table(
+    'department_leaders',
+    BaseModel.metadata,
+    Column('department_id', String(100), ForeignKey('departments.id')),
+    Column('member_id', String(100), ForeignKey('members.id')),
+    Column('role', String(50)),
+    Column('is_primary', Boolean, default=False)
+)
 
 
 class Department(BaseModel, Base):
     """Manages departments in the church"""
     __tablename__ = 'departments'
-    name = Column(String(100), nullable=False)
-    notes = Column(String(255), nullable=False)
 
+    # Basic information
+    name = Column(String(100), nullable=False, unique=True)
+    description = Column(String(255), nullable=False)
+    department_type = Column(Enum(DepartmentStatus), nullable=False, default=DepartmentType.MINISTRY)
+    status = Column(Enum(DepartmentStatus), default=DepartmentStatus.ACTIVE)
+
+    # Department Details
+    meeting_schedule = Column(String(200))
+    meeting_location = Column(String(100))
+    vision_statement = Column(Text)
+    mission_statement = Column(Text)
+
+
+    # Parent Department (for hierarchical structure)
+    parent_id = Column(String(100), ForeignKey('departments.id'))
+
+    # Relationship
     members = relationship('Membership', back_populates='departments')
-    pass
+    leaders = relationship(
+        'Membership',
+        secondary=department_leaders,
+        backref="leading_departments"
+    )
+    activities = relationship("DepartmentActivity", back_populates='department')
+    reports = relationship('DepartmentReport', back_populates='department')
+
+    def add_leader(self, member, role='Leader', is_primary=False):
+        """Add a leader to the department"""
+        connection = department_leaders.insert().values(
+            department_id=self.id,
+            member_id=member.id,
+            role=role,
+            is_primary=is_primary
+        )
+        return connection
+
+    def remove_leader(self, member):
+        """Remove a leader from the department"""
+        connection = department_leaders.delete().where(
+            department_leaders.c.department_id == self.id,
+            department_leaders.c.member_id == member.id
+        )
+        return connection
+
+    def get_member_count(self):
+        """Get total number of members in the department"""
+        return len(self.members)
+
+    def get_active_members(self):
+        """Get list of active members in the department"""
+        return [member for member in self.members if member.membership_status == 'active']
+
+
+class DepartmentActivity(BaseModel, Base):
+    """Records and tracks the departments activities"""
+    __tablename__ ='department_activities'
+
+    department_id = Column(String(100), ForeignKey('departments.id'), nullable=False)
+    name = Column(String(100), nullable=False)
+    description = Column(Text)
+    start_date = Column(DateTime, nullable=False)
+    end_date = Column(DateTime)
+    status = Column(String(50)) # planned, ongoing, completed, cancelled
+    location = Column(String(100))
+    budget = Column(Float)
+
+    # Relationships
+    department = relationship('Department', back_populates='activities')
+    attendees = relationship('Membership', secondary='activity_attendees',
+                             back_populates='activities_attended')
+
+
+class DepartmentReport(BaseModel, Base):
+    """Records departments reports"""
+    __tablename__ = 'department_reports'
+
+    department_id = Column(String(100), ForeignKey('departments.id'), nullable=False)
+    report_date = Column(DateTime, nullable=False)
+    title = Column(String(200), nullable=False)
+    content = Column(Text, nullable=False)
+    report_type = Column(String(50))
+    submitted_by_id = Column(String(100), ForeignKey('members.id'))
+    status = Column(String(50))
+
+    department = relationship('Department', back_populates='reports')
+    submitted_by = relationship("Membership")

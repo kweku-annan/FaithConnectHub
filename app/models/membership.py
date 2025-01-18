@@ -68,5 +68,10 @@ class Membership(BaseModel, Base):
     groups = relationship('Group', back_populates='members')
     last_attendance_date = ""
     attendance_record = relationship('Attendance', back_populates='member')
+    activities_attended = relationship(
+        "DepartmentActivity",
+        secondary="activity_attendees",
+        back_populates="attendees"
+    )
 
 
