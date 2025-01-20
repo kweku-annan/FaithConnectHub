@@ -76,6 +76,9 @@ class Department(BaseModel, Base):
     )
     activities = relationship("DepartmentActivity", back_populates='department')
     reports = relationship('DepartmentReport', back_populates='department')
+    incomes = relationship("Event", back_populates="incomes")
+    expenses = relationship("Expenses", back_populates="department")
+    budget_items = relationship("BudgetItem", back_populates='department')
 
     def add_leader(self, member, role='Leader', is_primary=False):
         """Add a leader to the department"""
@@ -137,3 +140,12 @@ class DepartmentReport(BaseModel, Base):
 
     department = relationship('Department', back_populates='reports')
     submitted_by = relationship("Membership")
+
+
+# Association table for activity attendees
+activity_attendees = Table(
+    'activity_attendees',
+    BaseModel.metadata,
+    Column('activity_id', String(100), ForeignKey('department_activities.id')),
+    Column('member_id', String(100), ForeignKey('members.id'))
+)

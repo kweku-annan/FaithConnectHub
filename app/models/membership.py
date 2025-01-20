@@ -73,5 +73,6 @@ class Membership(BaseModel, Base):
         secondary="activity_attendees",
         back_populates="attendees"
     )
+    donations = relationship("Income", back_populates="donor")
 
 

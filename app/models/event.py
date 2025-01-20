@@ -34,6 +34,8 @@ class Event(BaseModel, Base):
 
     # Relationships
     attendance_record = relationship('Attendance', back_populates='events')
+    incomes = relationship('Income', back_populates='event')
+    expenses = relationship("Expenses", back_populates="event")
 
     # Statistics tracking
     total_attendance = Column(Integer, default=0)
