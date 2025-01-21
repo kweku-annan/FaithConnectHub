@@ -41,7 +41,7 @@ class Event(BaseModel, Base):
     total_attendance = Column(Integer, default=0)
     male_attendance = Column(Integer, default=0)
     female_attendance = Column(Integer, default=0)
-    first_timeer_count = Column(Integer, default=0)
+    first_timer_count = Column(Integer, default=0)
 
     def update_attendance_stats(self):
         """Update attendance statistics for the service"""

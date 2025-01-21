@@ -16,6 +16,7 @@ TODO 4: Reporting and Insights:
 """
 from email.policy import default
 
+from click import DateTime
 from sqlalchemy import Column, String, Date, ForeignKey, Enum
 from enum import Enum as PyEnum
 
@@ -65,8 +66,10 @@ class Membership(BaseModel, Base):
     department_id = Column(ForeignKey('departments.id'), nullable=True)
     departments = relationship('Department', back_populates='members')
     group_id = Column(ForeignKey('groups.id'), nullable=True)
-    groups = relationship('Group', back_populates='members')
-    last_attendance_date = ""
+    groups = relationship('Group', secondary='group_members', back_populates='members')
+    group_activities = relationship('GroupActivity', secondary='activity_attendees', back_populates='attendees')
+    group_meetings = relationship('GroupMeeting', secondary='meeting_attendees', back_populates='attendees')
+    last_attendance_date = Column(DateTime)
     attendance_record = relationship('Attendance', back_populates='member')
     activities_attended = relationship(
         "DepartmentActivity",
@@ -74,5 +77,6 @@ class Membership(BaseModel, Base):
         back_populates="attendees"
     )
     donations = relationship("Income", back_populates="donor")
+    user = relationship('User', back_populates='member', uselist=False)
 
 

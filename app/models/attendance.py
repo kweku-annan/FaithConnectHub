@@ -5,10 +5,10 @@ TODO 2: Engagement Analysis: Identify highly engaged members and those who need 
 TODO 3: Reporting: Provide insights such as attendance trends, average attendance, and demographic participation.
 TODO 4: Accountability: Ensure leaders or participants fulfill their commitments.
 """
-import datetime
+from datetime import datetime
 from unittest import defaultTestLoader
 
-from sqlalchemy import Column, ForeignKey, UniqueConstraint, Boolean, String, Time, Enum
+from sqlalchemy import Column, ForeignKey, UniqueConstraint, Boolean, String, Time, Enum, DateTime
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 
@@ -20,6 +20,12 @@ class AttendanceRole(PyEnum):
     LEADER = 'leader'
     VOLUNTEER = 'volunteer'
     SPEAKER = 'speaker'
+
+
+class AttendanceStatus(PyEnum):
+    PRESENT =  "present"
+    ABSENT =    "absent"
+    LATE = "late"
 
 
 class Attendance(BaseModel, Base):
@@ -36,8 +42,8 @@ class Attendance(BaseModel, Base):
     check_out_time = Column(Time)
     is_present = Column(Boolean, default=True) # For tracking actual people present for a registered event.
     role = Column(Enum(AttendanceRole), default=AttendanceRole.ATTENDEE)
-    attendance_date = ""
-    status = ""
+    attendance_date = Column(DateTime, nullable=False)
+    status = Column(Enum(AttendanceStatus), default=AttendanceStatus.PRESENT)
 
     # Commitment tracking
     assigned_duties = Column(String(200)) # Track responsibilities

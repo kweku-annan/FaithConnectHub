@@ -54,7 +54,7 @@ class Department(BaseModel, Base):
     # Basic information
     name = Column(String(100), nullable=False, unique=True)
     description = Column(String(255), nullable=False)
-    department_type = Column(Enum(DepartmentStatus), nullable=False, default=DepartmentType.MINISTRY)
+    department_type = Column(Enum(DepartmentType), nullable=False, default=DepartmentType.MINISTRY)
     status = Column(Enum(DepartmentStatus), default=DepartmentStatus.ACTIVE)
 
     # Department Details
@@ -76,9 +76,10 @@ class Department(BaseModel, Base):
     )
     activities = relationship("DepartmentActivity", back_populates='department')
     reports = relationship('DepartmentReport', back_populates='department')
-    incomes = relationship("Event", back_populates="incomes")
-    expenses = relationship("Expenses", back_populates="department")
+    incomes = relationship("Income", back_populates="department")
+    expenses = relationship("Expense", back_populates="department")
     budget_items = relationship("BudgetItem", back_populates='department')
+    groups = relationship('Group', back_populates='department')
 
     def add_leader(self, member, role='Leader', is_primary=False):
         """Add a leader to the department"""
