@@ -1,31 +1,23 @@
 #!/usr/bin/python3
 """Base Model of FaithConnect Hub"""
 import uuid
+from os import getenv
+
+from sqlalchemy import Column, String, DateTime
+
 from app import models
 from datetime import datetime
+
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 
 class BaseModel:
     """The Base Model Class of this project"""
-    def __init__(self, *args, **kwargs):
-        """Initializes Attributes"""
-        if kwargs is not None and len(kwargs) != 0:
-            for key in kwargs:
-                if key == "id":
-                    self.id = kwargs[key]
-                elif key == "created_at":
-                    self.created_at = datetime.strptime(kwargs[key],
-                                                        "%Y-%m-%dT%H:%M:%S.%f")
-                elif key == "updated_at":
-                    self.updated_at = datetime.strptime(kwargs[key],
-                                                        "%Y-%m-%dT%H:%M:%S.%f")
-                else:
-                    if key != "__class__":
-                        setattr(self, key, kwargs[key])
-        else:
-            self.id = str(uuid.uuid4()) # Assign when an instance is created
-            self.created_at = self.updated_at = datetime.now()
-            models.storage.new(self)
+    id = Column(String(60), default=lambda: str(uuid.uuid4()), primary_key=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
+    updated_at = Column(DateTime, default=datetime.now, nullable=False)
 
 
     def __str__(self):
@@ -50,3 +42,7 @@ class BaseModel:
                 a_dict[key] = self.updated_at.isoformat()
         a_dict["__class__"] = type(self).__name__
         return a_dict
+
+    def delete(self):
+        """Deletes the current instance from the storage"""
+        models.storage.delete(self)

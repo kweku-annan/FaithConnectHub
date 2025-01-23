@@ -1,29 +1,24 @@
-#!/usr/bin/python3
-"""Manages User Role and Authentications
-TODO 1: User Authentication
-        Verifies the identity of a user.
-        Involves processes like login, logout, and secure session management.
+#/usr/bin/env python
+"""User model"""
+from datetime import datetime
+from app.models.base_model import BaseModel, Base
+from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import Column, String, Boolean
 
-TODO 2: Role Management
-        Assigns roles to users (e.g., Admin, Pastor, Member).
-        Controls access to specific features or resources based on the
-        user’s role.
+class User(BaseModel, Base):
+    __tablename__ = 'users'
 
-TODO 3: Authorization
-        Ensures that users can only perform actions or access
-        resources permitted for their role.
-"""
-from app.models.base_model import BaseModel
+    username = Column(String(50), nullable=False, unique=True)
+    email = Column(String(120), nullable=False, unique=True)
+    password_hash = Column(String(128), nullable=False)
+    role = Column(String(20), nullable=False, default='Member')
+    is_active = Column(Boolean, default=True)
 
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
 
-class User(BaseModel):
-    """Model to manage user Authentication and Role"""
-    email = ""
-    password_hash = ""
-    username = ""
-    role = ""
-    is_active = True
-    is_verified = False
-    first_name = ""
-    last_name = ""
-    phone_number = ""
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return f"<User {self.username}, Role: {self.role}>"
