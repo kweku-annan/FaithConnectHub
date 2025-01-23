@@ -4,19 +4,19 @@ Allows creation and managing of groups in the church
 """
 from datetime import datetime
 from enum import Enum as PyEnum
-from sqlite3 import SQLITE_CONSTRAINT_TRIGGER
 
 from sqlalchemy import Column, String, Table, ForeignKey, DateTime, Text, Enum, Time, Integer, Boolean, nullsfirst
 from sqlalchemy.orm import relationship, backref
 
 from app.models.base_model import BaseModel, Base
+from app.models.department import activity_attendees
 
 # Association table for group members with roles
 group_members = Table(
     'group_members',
     BaseModel.metadata,
-    Column('group_id', String(50), ForeignKey('groups.id')),
-    Column('member_id', String(50), ForeignKey('members.id')),
+    Column('group_id', String(60), ForeignKey('groups.id')),
+    Column('member_id', String(60), ForeignKey('members.id')),
     Column('role', String(50), default='member'),  # e.g. 'leader', 'assistant', 'member'
     Column('joined_date', DateTime, default=datetime.utcnow)
 )
@@ -65,11 +65,11 @@ class Group(BaseModel, Base):
     is_public = Column(Boolean, default=True)  # whether group is an opened or a closed one
 
     # Leadership
-    leader_id = Column(String(50), ForeignKey('members.id'))
-    assistant_leader_id = Column(String(50), ForeignKey('members.id'))
+    leader_id = Column(String(60), ForeignKey('members.id'))
+    assistant_leader_id = Column(String(60), ForeignKey('members.id'))
 
     # Department Association
-    department_id = Column(String(50), ForeignKey('departments.id'))
+    department_id = Column(String(60), ForeignKey('departments.id'))
 
     # Relationships
     leader = relationship('Membership', foreign_keys=[leader_id], backref='leading_groups')
@@ -79,7 +79,8 @@ class Group(BaseModel, Base):
         'Membership',
         secondary=group_members,
         back_populates='groups',
-        lazy='dynamic'
+        lazy='dynamic',
+        foreign_keys=[group_members.c.group_id, group_members.c.member_id]
     )
     activities = relationship('GroupActivity', back_populates='group', cascade="all, delete-orphan")
     meetings = relationship('GroupMeeting', back_populates='group', cascade="all, delete-orphan")
@@ -125,7 +126,7 @@ class GroupActivity(BaseModel, Base):
     """Tracks activities organized by groups"""
     __tablename__ = 'group_activities'
 
-    group_id = Column(String(50), ForeignKey('groups_id'), nullable=False)
+    group_id = Column(String(60), ForeignKey('groups.id'), nullable=False)
     name = Column(String(100), nullable=False)
     description = Column(Text)
     start_date = Column(DateTime, nullable=False)
@@ -139,13 +140,16 @@ class GroupActivity(BaseModel, Base):
     attendees = relationship(
         'Membership',
         secondary='activity_attendees',
-        back_populates='group_activities'
+        back_populates='group_activities',
+        foreign_keys=[activity_attendees.c.activity_id, activity_attendees.c.member_id]
     )
 
 
 class GroupMeeting(BaseModel, Base):
     """Tracks regular group meetings"""
-    group_id = Column(String(50), ForeignKey('groups.id'), nullable=False)
+    __tablename__ = 'group_meetings'
+
+    group_id = Column(String(60), ForeignKey('groups.id'), nullable=False)
     meeting_date = Column(DateTime, nullable=False)
     start_time = Column(Time)
     end_time = Column(Time)

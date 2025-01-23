@@ -14,8 +14,10 @@ TODO 2: Expense Management
      -- Associate expenses with specific events, departments, or projects (optional).
 """
 from datetime import datetime
+from decimal import Decimal
 
-from sqlalchemy import Column, Float, Enum, DateTime, String, ForeignKey, Boolean, Text, func, Integer
+from sqlalchemy import Column, Float, Enum, DateTime, String, ForeignKey, Boolean, Text, func, Integer, Numeric, \
+    CheckConstraint
 from sqlalchemy.orm import relationship
 
 from app.models.base_model import BaseModel, Base
@@ -57,14 +59,19 @@ class Income(BaseModel, Base):
     __tablename__ = "incomes"
 
     # Basic Information
-    amount = Column(Float, nullable=False)
+    amount = Column(Numeric(10, 2), nullable=False)
     income_type = Column(Enum(IncomeType), nullable=False)
     payment_method = Column(Enum(PaymentMethod))
     transaction_date = Column(DateTime, nullable=False, default=datetime.utcnow)
     reference_number = Column(String(50), unique=True)  # For receipts/tracking
 
+    # Add constraint to ensure positive amounts
+    __table_args__ = (
+        CheckConstraint('amount >= 0', name='check_positive_amount'),
+    )
+
     # Source Information
-    donor_id = Column(String(50), ForeignKey('members.id')) # Optional for anonymous donations
+    donor_id = Column(String(60), ForeignKey('members.id')) # Optional for anonymous donations
     is_anonymous = Column(Boolean, default=False)
 
     # Additional Details
@@ -72,11 +79,11 @@ class Income(BaseModel, Base):
     purpose = Column(String(200))
 
     # Department/Event Association
-    department_id = Column(String(50), ForeignKey('departments.id'))
-    event_id = Column(String(50), ForeignKey('events.id'))
+    department_id = Column(String(60), ForeignKey('departments.id'))
+    event_id = Column(String(60), ForeignKey('events.id'))
 
     # Relationships
-    donor = relationship("Membership", back_populates="donations")
+    donor = relationship("Membership", back_populates="donations", foreign_keys=[donor_id])
     department = relationship("Department", back_populates="incomes")
     event = relationship("Event", back_populates="incomes")
 
@@ -98,9 +105,10 @@ class Income(BaseModel, Base):
         query = session.query(func.sum(cls.amount))
         if income_type:
             query = query.filter(cls.income_type == income_type)
-        return query.filter(
+        result = query.filter(
             cls.transaction_date.between(start_date, end_date)
         ).scalar() or 0.0
+        return Decimal('0.00') if result is None else result
 
 
 class Expense(BaseModel, Base):
@@ -108,10 +116,15 @@ class Expense(BaseModel, Base):
     __tablename__ = 'expenses'
 
     # Basic information
-    amount = Column(Float, nullable=False)
+    amount = Column(Numeric(10, 2), nullable=False)
     expense_category = Column(Enum(ExpenseCategory), nullable=False)
     transaction_date = Column(DateTime, nullable=False, default=datetime.utcnow)
     reference_number = Column(String(50), unique=True)
+
+    # Add positive constraint
+    __table_args__ = (
+        CheckConstraint('amount >= 0', name='check_positive_constraint'),
+    )
 
     # Payment details
     payment_method = Column(Enum(PaymentMethod))
@@ -123,17 +136,17 @@ class Expense(BaseModel, Base):
     purpose = Column(String(200))
 
     # Association
-    department_id = Column(String(50), ForeignKey('departments.id'))
-    event_id = Column(String(50), ForeignKey('events.id'))
-    approved_by_id = Column(String(50), ForeignKey('members.id'))
+    department_id = Column(String(60), ForeignKey('departments.id'))
+    event_id = Column(String(60), ForeignKey('events.id'))
+    approved_by_id = Column(String(60), ForeignKey('members.id'))
 
     # Relationships
     department = relationship("Department", back_populates="expenses")
     event = relationship("Event", back_populates="expenses")
-    approved_by = relationship("Member")
+    approved_by = relationship("Membership", foreign_keys=[approved_by_id])
 
     # Budget Tracking
-    budget_item_id = Column(String(50), ForeignKey('budget_items.id'))
+    budget_item_id = Column(String(60), ForeignKey('budget_items.id'))
     is_budgeted = Column(Boolean, default=False)
 
     @classmethod
@@ -142,9 +155,10 @@ class Expense(BaseModel, Base):
         query = session.query(func.sum(cls.amount))
         if category:
             query = query.filter(cls.expense_category == category)
-        return query.filter(
+        result = query.filter(
             cls.transaction_date.between(start_date, end_date)
         ).scalar() or 0.0
+        return Decimal('0.00') if result is None else result
 
 
 class BudgetItem(BaseModel, Base):
@@ -159,7 +173,7 @@ class BudgetItem(BaseModel, Base):
 
     # Details
     description = Column(Text)
-    department_id = Column(String(50), ForeignKey('departments.id'))
+    department_id = Column(String(60), ForeignKey('departments.id'))
 
     # Tracking
     current_spent = Column(Float, default=0.0)
@@ -195,7 +209,7 @@ class FinancialReport(BaseModel, Base):
     net_amount = Column(Float)
 
     # Meta
-    generated_by_id = Column(String(50), ForeignKey('members.id'))
+    generated_by_id = Column(String(60), ForeignKey('members.id'))
     generated_at = Column(DateTime, default=datetime.utcnow)
 
     def generate_summary(self, session):

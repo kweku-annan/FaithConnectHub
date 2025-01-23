@@ -13,11 +13,11 @@ TODO 3: Authorization
         Ensures that users can only perform actions or access
         resources permitted for their role.
 """
+import re
 from datetime import datetime, timedelta
 
-from dns.dnssecalgs import algorithms
 from flask import current_app
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Enum, DateTime, Boolean
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Enum, DateTime, Boolean, event
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
@@ -29,16 +29,16 @@ from enum import Enum as PyEnum
 user_roles = Table(
     'user_roles',
     BaseModel.metadata,
-    Column('user_id', String(50), ForeignKey('users.id')),
-    Column('role_id', String(50), ForeignKey('roles.id'))
+    Column('user_id', String(60), ForeignKey('users.id')),
+    Column('role_id', String(60), ForeignKey('roles.id'))
 )
 
 # Association table for role permissions
 role_permissions = Table(
     'role_permissions',
     BaseModel.metadata,
-    Column('role_id', String(50), ForeignKey('roles.id')),
-    Column('permission_id', String(50), ForeignKey('permissions.id'))
+    Column('role_id', String(60), ForeignKey('roles.id')),
+    Column('permission_id', String(60), ForeignKey('permissions.id'))
 )
 
 
@@ -47,6 +47,28 @@ class UserStatus(PyEnum):
     INACTIVE = 'inactive'
     SUSPENDED = 'suspended'
     PENDING = 'pending'
+
+
+class UserSession(BaseModel, Base):
+    """Handles user sessions"""
+    __tablename__ = 'user_sessions'
+
+    user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
+    token = Column(String(500), nullable=False)
+    ip_address = Column(String(50))
+    user_agent = Column(String(200))
+    expires_at = Column(DateTime, nullable=False)
+    is_active = Column(Boolean, default=True)
+
+    # Relationships
+    user = relationship("User", back_populates="sessions", foreign_keys=[user_id])
+
+
+    def is_valid(self):
+        """Check if session is valid"""
+        return (
+            self.is_active and self.expires_at > datetime.utcnow
+        )
 
 
 class User(BaseModel, Base):
@@ -64,13 +86,26 @@ class User(BaseModel, Base):
     failed_login_attempts = Column(Integer, default=0)
     must_change_password = Column(Boolean, default=True)
 
+    # New security fields
+    password_reset_token = Column(String(100), unique=True)
+    password_reset_expires = Column(DateTime)
+    last_password_change = Column(DateTime, default=datetime.utcnow)
+    failed_login_attempts = Column(Integer, default=0)
+    account_locked_until = Column(DateTime)
+    last_login = Column(DateTime)
+
+    # Account security settings
+    require_password_change = Column(Boolean, default=False)
+    max_failed_attempts = 5
+    lockout_duration = timedelta(minutes=15)
+
     # Profile Association
-    member_id = Column(String(50), ForeignKey('membership.id'), unique=True)
+    member_id = Column(String(60), ForeignKey('members.id'), unique=True)
 
     # Relationships
-    member = relationship("Membership", back_populates="user")
+    member = relationship("Membership", back_populates="user", foreign_keys=[member_id])
     roles = relationship('Role', secondary=user_roles, back_populates='users')
-    sessions = relationship('UserSession', back_populates='user')
+    sessions = relationship('UserSession', back_populates='user', foreign_keys=[UserSession.user_id])
 
     @property
     def password(self):
@@ -78,7 +113,58 @@ class User(BaseModel, Base):
 
     @password.setter
     def password(self, password):
+        if not self._is_password_strong(password):
+            raise ValueError(
+                'Password must be at least 8 characters long and contain '
+                'uppercase, lowercase, number and special character'
+            )
         self.password_hash = generate_password_hash(password)
+        self.last_password_change = datetime.utcnow()
+
+    def _is_password_strong(self, password):
+        """Validate password strength"""
+        if len(password) < 8:
+            return False
+
+        patterns = [
+            r'[A-Z]', # Uppercase
+            r'[a-z]', # Lowercase
+            r'[0-9]', # Numbers
+            r'[!@#$%^&*(),.?":{}|<>]' # Special Characters
+        ]
+
+        return all(re.search(pattern, password) for pattern in patterns)
+
+    def record_login_attempt(self, success):
+        """Record login attempt and handle account locking"""
+        if success:
+            self.failed_login_attempts = 0
+            self.last_login = datetime.utcnow()
+            self.account_locked_until = None
+        else:
+            self.failed_login_attempts += 1
+            if self.failed_login_attempts >= self.max_failed_attempts:
+                self.account_locked_until = datetime.utcnow() + self.lockout_duration
+
+    def is_account_locked(self):
+        """Check if account is locked"""
+        if self.account_locked_until and self.account_locked_until > datetime.utcnow():
+            return True
+        return False
+
+    def generate_password_reset_token(self):
+        """Generate password reset token"""
+        import secrets
+        self.password_reset_token = secrets.token_urlsafe(32)
+        self.password_reset_expires = datetime.utcnow() + timedelta(minutes=30)
+        return self.password_reset_token
+
+    def verify_password_reset_token(self, token):
+        """Verify password reset token"""
+        return (
+            token == self.password_reset_token and
+            self.password_reset_expires > datetime.utcnow()
+        )
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -181,23 +267,8 @@ class Permission(BaseModel, Base):
         return permissions
 
 
-class UserSession(BaseModel, Base):
-    """Handles user sessions"""
-    __tablename__ = 'user_sessions'
-
-    user_id = Column(String(50), ForeignKey('users.id'), nullable=False)
-    token = Column(String(500), nullable=False)
-    ip_address = Column(String(50))
-    user_agent = Column(String(200))
-    expires_at = Column(DateTime, nullable=False)
-    is_active = Column(Boolean, default=True)
-
-    # Relationships
-    user = relationship("User", back_populates="sessions")
-
-
-    def is_valid(self):
-        """Check if session is valid"""
-        return (
-            self.is_active and self.expires_at > datetime.utcnow
-        )
+# SQLAlchemy event listeners for additional security
+@event.listens_for(User.password_hash, 'set')
+def on_password_change(target, value, old_value, initiator):
+    """Track password changes"""
+    target.last_password_change = datetime.utcnow()

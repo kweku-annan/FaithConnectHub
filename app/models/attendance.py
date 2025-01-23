@@ -6,7 +6,6 @@ TODO 3: Reporting: Provide insights such as attendance trends, average attendanc
 TODO 4: Accountability: Ensure leaders or participants fulfill their commitments.
 """
 from datetime import datetime
-from unittest import defaultTestLoader
 
 from sqlalchemy import Column, ForeignKey, UniqueConstraint, Boolean, String, Time, Enum, DateTime
 from sqlalchemy.orm import relationship
@@ -31,10 +30,10 @@ class AttendanceStatus(PyEnum):
 class Attendance(BaseModel, Base):
     """Tracks and understand members engagement"""
     __tablename__ = 'attendance'
-    event_id = Column(ForeignKey('events.id'), nullable=False)
+    event_id = Column(String(60), ForeignKey('events.id'), nullable=False)
     events = relationship('Event', back_populates='attendance_record')
-    member_id = Column(ForeignKey('members.id'), nullable=False)
-    member = relationship('Membership', back_populates='attendance_record')
+    member_id = Column(String(60), ForeignKey('members.id'), nullable=False)
+    member = relationship('Membership', back_populates='attendance_record', foreign_keys=[member_id])
     comments = Column(String(200)) # Additional notes about participation
 
     # Attendance Details
@@ -51,7 +50,7 @@ class Attendance(BaseModel, Base):
 
 
     __table_args__ = (
-        UniqueConstraint('member_id', 'event_id', name='unique_member_service_attendance')
+        UniqueConstraint('member_id', 'event_id', name='unique_member_service_attendance'),
     )
 
     @property

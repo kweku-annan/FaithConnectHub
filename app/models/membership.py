@@ -16,13 +16,13 @@ TODO 4: Reporting and Insights:
 """
 from email.policy import default
 
-from click import DateTime
-from sqlalchemy import Column, String, Date, ForeignKey, Enum
+from sqlalchemy import Column, String, Date, ForeignKey, Enum, DateTime
 from enum import Enum as PyEnum
 
 from sqlalchemy.orm import relationship
 
 from app.models.base_model import BaseModel, Base
+from app.models.department import activity_attendees
 
 
 class MembershipStatus(PyEnum):
@@ -54,8 +54,8 @@ class Membership(BaseModel, Base):
     date_of_birth = Column(Date, nullable=True)
 
     # Contact and Address Information
-    email = Column(String(128), unique=False, nullable=True)
-    phone_number = Column(String(50), nullable=False)
+    email = Column(String(128), unique=True, nullable=True, index=True)
+    phone_number = Column(String(50), nullable=False, index=True)
     address = Column(String(128), nullable=True)
     town_of_residence = Column(String(50), nullable=False)
 
@@ -63,20 +63,25 @@ class Membership(BaseModel, Base):
     membership_status = Column(Enum(MembershipStatus), default=MembershipStatus.ACTIVE)
     date_joined = Column(Date, nullable=False)
     role_in_church = Column(String(50), nullable=False)
-    department_id = Column(ForeignKey('departments.id'), nullable=True)
+    department_id = Column(String(60), ForeignKey('departments.id'), nullable=True)
     departments = relationship('Department', back_populates='members')
-    group_id = Column(ForeignKey('groups.id'), nullable=True)
+    group_id = Column(String(60), ForeignKey('groups.id'), nullable=True)
     groups = relationship('Group', secondary='group_members', back_populates='members')
-    group_activities = relationship('GroupActivity', secondary='activity_attendees', back_populates='attendees')
+    group_activities = relationship(
+        'GroupActivity',
+        secondary='activity_attendees',
+        back_populates='attendees',
+        foreign_keys=[activity_attendees.c.activity_id, activity_attendees.c.member_id]
+    )
     group_meetings = relationship('GroupMeeting', secondary='meeting_attendees', back_populates='attendees')
     last_attendance_date = Column(DateTime)
-    attendance_record = relationship('Attendance', back_populates='member')
+    attendance_record = relationship('Attendance', back_populates='member', foreign_keys=['Attendance.member_id'])
     activities_attended = relationship(
         "DepartmentActivity",
         secondary="activity_attendees",
         back_populates="attendees"
     )
     donations = relationship("Income", back_populates="donor")
-    user = relationship('User', back_populates='member', uselist=False)
+    user = relationship('User', back_populates='member', uselist=False, foreign_keys=['User.member_id'])
 
 
