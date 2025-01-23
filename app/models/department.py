@@ -8,10 +8,6 @@ Has the ability to Manage department membership
 Features could include:
     Creating, editing, and deleting departments/units/ministries.
     Assigning leaders and tracking members for each department.
-    Tracking activities, events, and reports for specific ministries.Features could include:
-
-    Creating, editing, and deleting departments/units/ministries.
-    Assigning leaders and tracking members for each department.
     Tracking activities, events, and reports for specific ministries.
 """
 from email.policy import default
