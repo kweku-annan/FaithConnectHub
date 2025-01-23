@@ -30,7 +30,7 @@ class FileStorage:
         """deserializes the JSON file to __objects"""
         from app.models.base_model import BaseModel
         from app.models.user import User
-        from app.models.membership import Member
+        from app.models.member import Member
         from app.models.event import Event
         from app.models.attendance import Attendance
         from app.models.finance import Expense, Income

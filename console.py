@@ -9,7 +9,7 @@ from app.models.base_model import BaseModel
 from app.models.event import Event
 from app.models.finance import Expense, Income
 from app.models.user import User
-from app.models.membership import Member
+from app.models.member import Member
 
 
 class FaithConnectHubCommand(cmd.Cmd):
