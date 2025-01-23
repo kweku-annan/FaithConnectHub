@@ -5,7 +5,7 @@ import json
 
 class FileStorage:
     """Works with making data persistent"""
-    __file_path = "../file.json"
+    __file_path = "storage.json"
     __objects = {}
 
     def all(self):

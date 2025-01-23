@@ -113,7 +113,7 @@
 
 ### 5.1 Unit Testing
 
-- Write unit tests for core functionalities using PyTest.
+- Write unit tests for core functionalities using unittest.
 
 ### 5.2 Integration Testing
 
