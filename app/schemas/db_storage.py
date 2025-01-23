@@ -59,9 +59,10 @@ class DBStorage:
 
     def reload(self):
         """Reloads objects from the database"""
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Base.metadata.create_all(self.__engine)
-        self.__session = scoped_session(session_factory)
+        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(session_factory)
+        self.__session = Session
 
     def new(self, obj):
         """Creates a new object"""
@@ -90,6 +91,12 @@ class DBStorage:
             return obj
         else:
             return None
+
+    def query(self, cls):
+        """Returns a query object"""
+        if not self.__session:
+            self.reload() # Ensure the session is initialized
+        return self.__session.query(cls)
 
     def count(self, cls=None):
         """Returns the number of objects in storage"""
