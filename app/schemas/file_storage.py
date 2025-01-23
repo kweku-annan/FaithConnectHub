@@ -1,16 +1,11 @@
 #!/usr/bin/python3
 """File storage model"""
 import json
-from app.models.base_model import BaseModel
-from app.models.user import User
-from app.models.membership import Membership
-from app.models.event import  Event
-from app.models.attendance import Attendance
-from app.models.finance import Expense, Income
+
 
 class FileStorage:
     """Works with making data persistent"""
-    __file_path = "../file.json"
+    __file_path = "storage.json"
     __objects = {}
 
     def all(self):
@@ -33,6 +28,12 @@ class FileStorage:
 
     def reload(self):
         """deserializes the JSON file to __objects"""
+        from app.models.base_model import BaseModel
+        from app.models.user import User
+        from app.models.member import Member
+        from app.models.event import Event
+        from app.models.attendance import Attendance
+        from app.models.finance import Expense, Income
         try:
             with open(FileStorage.__file_path, mode='r',
                       encoding='utf-8') as a_file:

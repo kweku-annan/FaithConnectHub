@@ -9,7 +9,7 @@ from app.models.base_model import BaseModel
 from app.models.event import Event
 from app.models.finance import Expense, Income
 from app.models.user import User
-from app.models.membership import Membership
+from app.models.member import Member
 
 
 class FaithConnectHubCommand(cmd.Cmd):
@@ -17,7 +17,7 @@ class FaithConnectHubCommand(cmd.Cmd):
 
     prompt = "FaithConnectHub$ "
     classes = {
-        'BaseModel': BaseModel, 'User': User, 'Membership': Membership,
+        'BaseModel': BaseModel, 'User': User, 'Member': Member,
         'Event': Event, 'Expense': Expense, 'Income': Income, 'Attendance': Attendance,
 
     }

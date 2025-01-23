@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Creates a Unique FileStorage instance for the application"""
-from app.engine.file_storage import FileStorage
+from app.schemas.db_storage import DBStorage
 
-storage = FileStorage()
+storage = DBStorage()
 storage.reload()

@@ -1,9 +1,0 @@
-create User email="aduemma07@gmail.com"
-create User username="kweku_annan"
-all User
-
-create Income amount="3000"
-create Income source="Tithe"
-all Income
-
-create Membership first_name="Emmanuel" last_name="Saah" other_names="Adu" phone_number="2335548" email="kweku@mail.com" date=12.12.25
