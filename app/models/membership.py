@@ -17,7 +17,7 @@ TODO 4: Reporting and Insights:
 from app.models.base_model import BaseModel
 
 
-class Membership(BaseModel):
+class Member(BaseModel):
     first_name = ""
     last_name = ""
     other_names = ""
@@ -25,7 +25,7 @@ class Membership(BaseModel):
     phone_number = ""
     address = ""
     date_of_birth = None
-    membership_id = ""
+    member_id = ""
     date_joined = None
     role_in_church = ""
     department_id = ""
