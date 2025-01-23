@@ -14,6 +14,12 @@ class User(BaseModel, Base):
     role = Column(String(20), nullable=False, default='Member')
     is_active = Column(Boolean, default=True)
 
+    def __init__(self, *args, **kwargs):
+        """Initializes the User instance"""
+        super().__init__(*args, **kwargs)
+        self.is_active = self.is_active or True
+        self.role = self.role or 'Member'
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
@@ -41,4 +47,7 @@ class User(BaseModel, Base):
         super().save()
 
     def __repr__(self):
+        return f"<User {self.username}, Role: {self.role}>"
+
+    def __str__(self):
         return f"<User {self.username}, Role: {self.role}>"
