@@ -4,6 +4,7 @@ databse connection
 """
 
 import os
+from dotenv import load_dotenv
 from app.models.base_model import Base
 from app.models.user import User
 from app.models.member import Member
@@ -12,6 +13,8 @@ from app.models.attendance import Attendance
 from app.models.finance import Expense, Income
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+
+load_dotenv()
 
 classes = {
     'User': User, 'Member': Member, 'Event': Event,
@@ -25,15 +28,15 @@ class DBStorage:
 
     def __init__(self):
         """Creates the engine and session"""
-        user = os.getenv("MYSQL_USER")
-        pwd = os.getenv("MYSQL_PWD")
-        host = os.getenv("MYSQL_HOST")
-        db = os.getenv("MYSQL_DB")
+        user = os.getenv("FaithConnectHub_USER")
+        pwd = os.getenv("FaithConnectHub_PWD")
+        host = os.getenv("FaithConnectHub_HOST")
+        db = os.getenv("FaithConnectHub_DB")
         self.__engine = create_engine(
             f'mysql+mysqldb://{user}:{pwd}@{host}/{db}',
             pool_pre_ping=True
         )
-        if os.getenv("HBNB_ENV") == "test":
+        if os.getenv("FaithConnectHub_ENV") == "test":
             Base.metadata.drop_all(self.__engine) # Drop all tables
 
     def all(self, cls=None):

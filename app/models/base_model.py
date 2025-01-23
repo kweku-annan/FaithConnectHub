@@ -19,6 +19,18 @@ class BaseModel:
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     updated_at = Column(DateTime, default=datetime.now, nullable=False)
 
+    def __init__(self, *args, **kwargs):
+        """Initializes the BaseModel instance"""
+        if kwargs:
+            for k, v in kwargs.items():
+                if k in ['created_at', 'updated_at']:
+                    v = datetime.strptime(v, "%Y-%m-%dT%H:%M:%S.%f")
+                if k != '__class__':
+                    setattr(self, k, v)
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = self.updated_at = datetime.now()
+
 
     def __str__(self):
         """Returns [<class name>] (<self.id>) <self.__dict__>"""
@@ -28,19 +40,13 @@ class BaseModel:
         """Updates the public instance attribute <update_at> with current
         datetime"""
         self.updated_at = datetime.now()
+        models.storage.new(self)
         models.storage.save()
 
     def to_dict(self):
         """Returns a dictionary containing all keys/values of __dict__"""
-        a_dict = dict(self.__dict__)
-        for key in a_dict:
-            if key == "id":
-                a_dict[key] = self.id
-            elif key == "created_at":
-                a_dict[key] = self.created_at.isoformat()
-            elif key == "updated_at":
-                a_dict[key] = self.updated_at.isoformat()
-        a_dict["__class__"] = type(self).__name__
+        a_dict = {k: v for k, v in self.__dict__.items() if not k.startswith('_')}
+        a_dict['__class__'] = type(self).__name__
         return a_dict
 
     def delete(self):
