@@ -11,6 +11,8 @@ from app.models.member import Member
 from app.models.event import Event
 from app.models.attendance import Attendance
 from app.models.finance import Expense, Income
+from app.models.department import Department
+from app.models.group import Group
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
@@ -18,7 +20,8 @@ load_dotenv()
 
 classes = {
     'User': User, 'Member': Member, 'Event': Event,
-    'Expense': Expense, 'Income': Income, 'Attendance': Attendance
+    'Expense': Expense, 'Income': Income, 'Attendance': Attendance,
+    'Department': Department, 'Group': Group
 }
 
 class DBStorage:

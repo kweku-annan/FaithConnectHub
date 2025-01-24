@@ -1,9 +1,13 @@
 #/usr/bin/env python
 """User model"""
 from datetime import datetime
+
+from sqlalchemy.orm import relationship
+
 from app.models.base_model import BaseModel, Base
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Column, String, Boolean, ForeignKey
+
 
 class User(BaseModel, Base):
     __tablename__ = 'users'
@@ -13,6 +17,11 @@ class User(BaseModel, Base):
     password_hash = Column(String(255), nullable=False)
     role = Column(String(20), nullable=False, default='Member')
     is_active = Column(Boolean, default=True)
+    member_id = Column(String(60), ForeignKey('members.id'), nullable=False)
+
+
+    # Relationships
+    member = relationship("Member", back_populates="user")
 
     def __init__(self, *args, **kwargs):
         """Initializes the User instance"""

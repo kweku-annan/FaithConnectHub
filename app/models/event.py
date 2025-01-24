@@ -6,20 +6,24 @@ TODO 3: Categorize events by type (e.g., service, workshop).
 TODO 4: Send notifications to members about events.
 """
 
-from app.models.base_model import BaseModel
+from app.models.base_model import BaseModel, Base
 
 
-class Event(BaseModel):
+class Event(BaseModel, Base):
     """Tracks and organizes church events"""
+    __tablename__ = 'events'
+
     name = ""
-    description = ""
-    start_date = None
-    end_date = None
-    start_time = None
-    end_time = None
+    date = None
     location = ""
-    is_registration_required = None
-    event_type = ""
-    is_recurring = None
-    recurrence_pattern = ""
+    description = ""
+    type = ""
+
+    def __init__(self, *args, **kwargs):
+        """Initializes the Event instance"""
+        super().__init__(*args, **kwargs)
+
+    def __repr__(self):
+        return f"<Event {self.name}>"
+
 
