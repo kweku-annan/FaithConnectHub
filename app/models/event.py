@@ -5,7 +5,7 @@ TODO 2: Track attendance by linking attendees (members or guests).
 TODO 3: Categorize events by type (e.g., service, workshop).
 TODO 4: Send notifications to members about events.
 """
-from sqlalchemy import Column, String, Date
+from sqlalchemy import Column, String, Date, Time, Text
 
 from app.models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship
@@ -31,5 +31,8 @@ class Event(BaseModel, Base):
 
     def __repr__(self):
         return f"<Event {self.name}, Date: {self.date}, Category: {self.category}>"
+
+    def __str__(self):
+        return f"{self.name} on {self.date} at {self.time} in {self.location}"
 
 
