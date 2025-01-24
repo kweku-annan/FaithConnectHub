@@ -27,7 +27,8 @@ class Attendance(BaseModel, Base):
     def __init__(self, *args, **kwargs):
         """Initializes the Attendance instance"""
         super().__init__(*args, **kwargs)
-        self.date = datetime.now()
+        self.date = kwargs.get('date', datetime.now())
+        self.status = kwargs.get('status', 'Present')
 
     def __repr__(self):
             return f"<Attendance {self.member_id} - {self.event_id}, Status {self.status}>"
