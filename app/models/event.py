@@ -7,6 +7,7 @@ TODO 4: Send notifications to members about events.
 """
 
 from app.models.base_model import BaseModel, Base
+from sqlalchemy.orm import relationship
 
 
 class Event(BaseModel, Base):
@@ -18,6 +19,10 @@ class Event(BaseModel, Base):
     location = ""
     description = ""
     type = ""
+
+
+    # Relationships
+    attendance = relationship("Attendance", back_populates="event")
 
     def __init__(self, *args, **kwargs):
         """Initializes the Event instance"""

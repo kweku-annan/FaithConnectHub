@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Model for tracking and understanding members engagement"""
+from app.models.association_tables import member_department, member_group
 from app.models.base_model import BaseModel, Base
 from datetime import datetime
 from sqlalchemy import Column, String, ForeignKey, DateTime
@@ -29,8 +30,8 @@ class Member(BaseModel, Base):
 
     # Relationships
     user = relationship("User", back_populates="member")
-    department = relationship("Department", back_populates="members")
-    group = relationship("Group", back_populates="members")
+    department = relationship("Department", secondary=member_department, back_populates="members")
+    group = relationship("Group", secondary=member_group, back_populates="members")
     attendance = relationship("Attendance", back_populates="member")
 
 
@@ -43,3 +44,18 @@ class Member(BaseModel, Base):
 
     def __repr__(self):
         return f"<Member {self.first_name} {self.last_name}, Role: {self.role}>"
+
+    def __str__(self):
+        return f"<Member {self.first_name} {self.last_name}, Role: {self.role}>"
+
+    @staticmethod
+    def check_duplicate_email(email):
+        """Checks duplicate email"""
+        from app.models import storage
+        return storage.query(Member).filter(Member.email == email).first()
+
+    def save(self):
+        """Custom save method to ensure no duplicates, then saves the member"""
+        if self.check_duplicate_email(self.email):
+            raise ValueError("Email already exists")
+        super().save()
