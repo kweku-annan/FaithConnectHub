@@ -11,12 +11,13 @@ class Department(BaseModel, Base):
     """Tracks and organizes church departments"""
     __tablename__ = 'departments'
 
-    name = ""
-    description = ""
-    head = ""
+    name = Column(String(100), nullable=False)
+    description = Column(String(255), nullable=False)
+    head = Column(String(60), ForeignKey('members.id'), nullable=False)
 
     # Relationships
     members = relationship("Member", secondary=member_department, back_populates="department")
+    financial_records = relationship("FinancialRecord", back_populates="department")
 
     def __init__(self, *args, **kwargs):
         """Initializes the Department instance"""

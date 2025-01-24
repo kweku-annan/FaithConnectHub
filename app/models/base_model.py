@@ -25,6 +25,13 @@ class BaseModel:
             for k, v in kwargs.items():
                 if k in ['created_at', 'updated_at']:
                     v = datetime.strptime(v, "%Y-%m-%dT%H:%M:%S.%f")
+
+                # Convert string to int if it is an int and float if it is a float
+                if isinstance(v, str):
+                    if v.isdigit():
+                        v = int(v)
+                    elif v.replace('.', '', 1).isdigit():
+                        v = float('%.2f' % float(v))
                 if k != '__class__':
                     setattr(self, k, v)
         else:

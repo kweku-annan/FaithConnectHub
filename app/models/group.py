@@ -11,13 +11,14 @@ class Group(BaseModel, Base):
     """Tracks and organizes church groups"""
     __tablename__ = 'groups'
 
-    name = ""
-    description = ""
-    head = ""
+    name = Column(String(100), nullable=False)
+    description = Column(String(255), nullable=False)
+    head = Column(String(60), ForeignKey('members.id'), nullable=False)
     member_id = Column(String(60), ForeignKey('members.id'), nullable=False)
 
     # Relationships
     members = relationship("Member", secondary=member_group, back_populates="group")
+    financial_records = relationship("FinancialRecord", back_populates="group")
 
     def __init__(self, *args, **kwargs):
         """Initializes the Group instance"""

@@ -33,7 +33,7 @@ class FileStorage:
         from app.models.member import Member
         from app.models.event import Event
         from app.models.attendance import Attendance
-        from app.models.finance import Expense, Income
+        from app.models.finance import FinancialRecord
         try:
             with open(FileStorage.__file_path, mode='r',
                       encoding='utf-8') as a_file:

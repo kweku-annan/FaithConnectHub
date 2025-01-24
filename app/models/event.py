@@ -16,14 +16,17 @@ class Event(BaseModel, Base):
     __tablename__ = 'events'
 
     name = Column(String(100), nullable=False)
-    date = Column(Date, nullable=False)
-    time = Column(Time, nullable=False)
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
+    start_time = Column(Time, nullable=False)
+    end_time = Column(Time, nullable=False)
     location = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
     category = Column(String(50), nullable=False, default='General')
 
     # Relationships
     attendance = relationship("Attendance", back_populates="event")
+    financial_records = relationship("FinancialRecord", back_populates="event")
 
     def __init__(self, *args, **kwargs):
         """Initializes the Event instance"""
