@@ -4,6 +4,7 @@ Handles all user registration and login operations
 Contains the registration and authentication endpoints.
 """
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -55,3 +56,10 @@ def login():
         return jsonify({'access_token': access_token}), 200
 
     return jsonify({'error': 'Invalid email/username or password'}), 401
+
+@auth_bp.route('/protected', methods=['GET'])
+@jwt_required()
+def protected():
+    """Protected route that requires authentication"""
+    current_user = get_jwt_identity()
+    return jsonify({'message': f'Hello, {current_user}! This is a protected route.'}), 200
