@@ -20,9 +20,24 @@ class Department(BaseModel, Base):
     leader = relationship("Member", secondary=member_department, back_populates="leading_department")
     financial_records = relationship("FinancialRecord", back_populates="department")
 
-    def __init__(self, *args, **kwargs):
-        """Initializes the Department instance"""
+    def __init__(self, name=None, description=None, leader_id=None, *args, **kwargs):
+        """
+        Initializes the Department instance with strict required field validation.
+        """
+        if not name or not isinstance(name, str):
+            raise TypeError("'name' is required and should be a non-empty string.")
+        if not description or not isinstance(description, str):
+            raise TypeError("'description' is required and should be a non-empty string.")
+        if not leader_id or not isinstance(leader_id, str):
+            raise TypeError("'leader_id' is required and should be a non-empty string.")
+
+        self.name = name
+        self.description = description
+        self.leader_id = leader_id
         super().__init__(*args, **kwargs)
 
     def __repr__(self):
+        return f"<Department {self.name}>"
+
+    def __str__(self):
         return f"<Department {self.name}>"

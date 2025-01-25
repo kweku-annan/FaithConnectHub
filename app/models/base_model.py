@@ -37,6 +37,10 @@ class BaseModel:
         else:
             self.id = str(uuid.uuid4())
             self.created_at = self.updated_at = datetime.now()
+        if not hasattr(self, 'created_at') or self.created_at is None:
+            self.created_at = datetime.now()
+        if not hasattr(self, 'updated_at') or self.updated_at is None:
+            self.updated_at = datetime.now()
 
 
     def __str__(self):
