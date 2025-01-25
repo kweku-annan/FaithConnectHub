@@ -2,7 +2,7 @@
 """"Tracks attendance and attendance records for church events"""
 from datetime import datetime
 
-from sqlalchemy import Column, String, ForeignKey, Text, Date
+from sqlalchemy import Column, String, ForeignKey, Text, Date, Boolean
 from sqlalchemy.orm import relationship
 
 from app.models.base_model import BaseModel, Base
@@ -12,11 +12,12 @@ class Attendance(BaseModel, Base):
     """Tracks attendance for church events"""
     __tablename__ = 'attendance'
 
-    member_id = Column(String(60), ForeignKey('members.id'), nullable=False)
+    member_id = Column(String(60), ForeignKey('members.id'), nullable=True)
     event_id = Column(String(60), ForeignKey('events.id'), nullable=False)
     status = Column(String(50), nullable=False, default='Present')
     remarks = Column(Text, nullable=True)
     date = Column(Date, nullable=False, default=datetime.now)
+    is_guest = Column(Boolean, nullable=False, default=False) # True if the attendee is a guest
 
 
 

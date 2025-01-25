@@ -31,6 +31,7 @@ class Member(BaseModel, Base):
     # Relationships
     user = relationship("User", back_populates="member")
     department = relationship("Department", secondary=member_department, back_populates="members")
+    leading_department = relationship("Department", secondary=member_department, back_populates="leader")
     group = relationship("Group", secondary=member_group, back_populates="members")
     attendance = relationship("Attendance", back_populates="member")
 

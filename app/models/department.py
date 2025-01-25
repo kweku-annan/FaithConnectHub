@@ -13,10 +13,11 @@ class Department(BaseModel, Base):
 
     name = Column(String(100), nullable=False)
     description = Column(String(255), nullable=False)
-    head = Column(String(60), ForeignKey('members.id'), nullable=False)
+    leader_id = Column(String(60), ForeignKey('members.id'), nullable=False)
 
     # Relationships
     members = relationship("Member", secondary=member_department, back_populates="department")
+    leader = relationship("Member", secondary=member_department, back_populates="leading_department")
     financial_records = relationship("FinancialRecord", back_populates="department")
 
     def __init__(self, *args, **kwargs):
