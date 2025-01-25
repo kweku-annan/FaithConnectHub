@@ -19,6 +19,8 @@ class Department(BaseModel, Base):
     members = relationship("Member", secondary=member_department, back_populates="department")
     leader = relationship("Member", secondary=member_department, back_populates="leading_department")
     financial_records = relationship("FinancialRecord", back_populates="department")
+    event = relationship("Event", back_populates="department")
+    group = relationship("Group", back_populates="department")
 
     def __init__(self, name=None, description=None, leader_id=None, *args, **kwargs):
         """

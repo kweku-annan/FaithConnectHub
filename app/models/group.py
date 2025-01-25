@@ -13,12 +13,15 @@ class Group(BaseModel, Base):
 
     name = Column(String(100), nullable=False)
     description = Column(String(255), nullable=False)
-    head = Column(String(60), ForeignKey('members.id'), nullable=False)
-    member_id = Column(String(60), ForeignKey('members.id'), nullable=False)
+    leader_id = Column(String(60), ForeignKey('members.id'), nullable=False)
+    department_id = Column(String(60), ForeignKey('departments.id'), nullable=False)
 
     # Relationships
     members = relationship("Member", secondary=member_group, back_populates="group")
+    leader = relationship("Member", secondary=member_group, back_populates="leading_group")
+    department = relationship("Department", back_populates="group")
     financial_records = relationship("FinancialRecord", back_populates="group")
+    event = relationship("Event", back_populates="group")
 
     def __init__(self, *args, **kwargs):
         """Initializes the Group instance"""
