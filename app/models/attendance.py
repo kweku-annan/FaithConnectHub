@@ -1,16 +1,38 @@
 #!/usr/bin/python3
-"""Model for tracking and understanding members engagement
-TODO 1: Participation Monitoring: Record who attended services, events, or meetings.
-TODO 2: Engagement Analysis: Identify highly engaged members and those who need encouragement.
-TODO 3: Reporting: Provide insights such as attendance trends, average attendance, and demographic participation.
-TODO 4: Accountability: Ensure leaders or participants fulfill their commitments.
-"""
-from app.models.base_model import BaseModel
+""""Tracks attendance and attendance records for church events"""
+from datetime import datetime
+
+from sqlalchemy import Column, String, ForeignKey, Text, Date, Boolean
+from sqlalchemy.orm import relationship
+
+from app.models.base_model import BaseModel, Base
 
 
-class Attendance(BaseModel):
-    """Tracks and understand members engagement"""
-    event_id = ""
-    member_id = ""
-    attendance_date = ""
-    status = ""
+class Attendance(BaseModel, Base):
+    """Tracks attendance for church events"""
+    __tablename__ = 'attendance'
+
+    member_id = Column(String(60), ForeignKey('members.id'), nullable=True)
+    event_id = Column(String(60), ForeignKey('events.id'), nullable=False)
+    status = Column(String(50), nullable=False, default='Present')
+    remarks = Column(Text, nullable=True)
+    date = Column(Date, nullable=False, default=datetime.now)
+    is_guest = Column(Boolean, nullable=False, default=False) # True if the attendee is a guest
+
+
+
+    # Relationships
+    member = relationship("Member", back_populates="attendance")
+    event = relationship("Event", back_populates="attendance")
+
+    def __init__(self, *args, **kwargs):
+        """Initializes the Attendance instance"""
+        super().__init__(*args, **kwargs)
+        self.date = kwargs.get('date', datetime.now())
+        self.status = kwargs.get('status', 'Present')
+
+    def __repr__(self):
+            return f"<Attendance {self.member_id} - {self.event_id}, Status {self.status}>"
+
+    def __str__(self):
+        return f"{self.member_id} - {self.event_id}, Status {self.status}"

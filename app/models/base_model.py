@@ -25,11 +25,22 @@ class BaseModel:
             for k, v in kwargs.items():
                 if k in ['created_at', 'updated_at']:
                     v = datetime.strptime(v, "%Y-%m-%dT%H:%M:%S.%f")
+
+                # Convert string to int if it is an int and float if it is a float
+                if isinstance(v, str) and k != 'id':
+                    if v.isdigit():
+                        v = int(v)
+                    elif v.replace('.', '', 1).isdigit() and k != 'id':
+                        v = float('%.2f' % float(v))
                 if k != '__class__':
                     setattr(self, k, v)
         else:
             self.id = str(uuid.uuid4())
             self.created_at = self.updated_at = datetime.now()
+        if not hasattr(self, 'created_at') or self.created_at is None:
+            self.created_at = datetime.now()
+        if not hasattr(self, 'updated_at') or self.updated_at is None:
+            self.updated_at = datetime.now()
 
 
     def __str__(self):
