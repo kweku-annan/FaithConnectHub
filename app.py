@@ -14,13 +14,20 @@ jwt = JWTManager()
 def create_app():
     """Creates and configures the Flask application"""
     app = Flask(__name__)
+
     app.config.from_object(Config)
+    app.config['JWT_SECRET_KEY'] = Config.SECRET_KEY
+    app.config['JWT_TOKEN_LOCATION'] = ['headers']
+    app.config['JWT_HEADER_NAME'] = 'Authorization'
+    app.config['JWT_HEADER_TYPE'] = 'Bearer'
+
 
     # Initialize extensions
     db.init_app(app)
     ma.init_app(app)
     jwt.init_app(app)
 
+    app.url_map.strict_slashes = False
     # Register blueprints
     from app.routes.auth import auth_bp
     from app.routes.admin import admin_bp
@@ -29,9 +36,16 @@ def create_app():
     from app.routes.member import members_bp
     from app.routes.event import events_bp
     from app.routes.attendance import attendance_bp
-    app.register_blueprint(auth_bp, url_prefix="/auth")
+    from app.routes.finance import finance_bp
 
-    app.register_blueprint(admin_bp, url_prefix="/resources")
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(admin_bp, url_prefix="/admin")
+    app.register_blueprint(department_bp, url_prefix="/resources")
+    app.register_blueprint(members_bp, url_prefix="/resources")
+    app.register_blueprint(group_bp, url_prefix="/resources")
+    app.register_blueprint(events_bp, url_prefix="/resources")
+    app.register_blueprint(attendance_bp, url_prefix="/resources")
+    app.register_blueprint(finance_bp, url_prefix="/resources")
 
 
 

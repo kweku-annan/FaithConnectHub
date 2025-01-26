@@ -9,7 +9,7 @@ from app.models.group import Group
 from app.models.member import Member
 from app.utils.role_helper import role_required
 
-department_bp = Blueprint('department', __name__)
+department_bp = Blueprint('departments', __name__)
 
 # Admin, Pastor & Members: Get all departments
 @department_bp.route('/departments', methods=['GET'])

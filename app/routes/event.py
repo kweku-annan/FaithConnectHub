@@ -62,3 +62,19 @@ def delete_event(event_id):
     event.delete()
     return jsonify({"message": "Event deleted successfully"}), 200
 
+# Member, Admin, & Pastor: Register for an event
+@events_bp.route('/events/<int:event_id>/register', methods=['POST'])
+@jwt_required()
+@role_required(['MEMBER', 'ADMIN', 'PASTOR'])
+def register_for_event(event_id):
+    event = storage.get(Event, event_id)
+    if not event:
+        return jsonify({"error": "Event not found"}), 404
+    user_id = get_jwt_identity()
+    if user_id not in [user.id for user in event.attendance]:
+        event.attendance.append(user_id)
+        event.save()
+        return jsonify({"message": "Registered for the event successfully"}), 200
+    else:
+        return jsonify({"error": "You are already registered for this event"}), 400
+

@@ -12,6 +12,7 @@ from app.utils.role_helper import role_required
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['POST'])
+@role_required(['ADMIN'])
 def register():
     """
     Registers a new user

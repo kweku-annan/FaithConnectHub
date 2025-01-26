@@ -4,7 +4,6 @@ from datetime import timedelta
 
 from flask_jwt_extended import create_access_token
 from sqlalchemy import or_
-from werkzeug.security import generate_password_hash, check_password_hash
 from app.models.user import User
 from app.models import storage
 
