@@ -57,7 +57,7 @@ def login():
 
 @auth_bp.route('/protected', methods=['GET'])
 @jwt_required()
-@role_required(["ADMIN", "PASTOR", "SUPER_ADMIN"])
+@role_required(["ADMIN", "PASTOR", "MEMBER"])
 def protected():
     """Protected route that requires authentication"""
     current_user = get_jwt_identity()

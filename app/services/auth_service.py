@@ -24,7 +24,7 @@ class AuthService:
 
         # Validate role
         role = data.get('role')
-        if role and role.upper() not in ['ADMIN', 'PASTOR', 'SUPER_ADMIN']:
+        if role and role.upper() not in ['ADMIN', 'PASTOR', 'MEMBER']:
             return {"error": "Invalid role"}, 400
         if role:
             data['role'] = role.upper()
@@ -33,7 +33,7 @@ class AuthService:
         user = User(
             email=data['email'],
             username=data['username'],
-            role=data.get('role', 'ADMIN')
+            role=data.get('role', 'MEMBER')
         )
         user.set_password(data['password'])
         user.save()

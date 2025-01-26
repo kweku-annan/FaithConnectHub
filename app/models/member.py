@@ -23,7 +23,7 @@ class Member(BaseModel, Base):
 
     # Church Information
     status = Column(String(20), nullable=False, default='active')  # active, inactive, suspended
-    role = Column(String(20), nullable=False, default='Member')  # member, leader, admin, pastor
+    role = Column(String(20), nullable=False, default='Member')  # member, admin, pastor
     date_joined = Column(DateTime, nullable=False)
     department_id = Column(String(60), ForeignKey('departments.id'), nullable=True)
     group_id = Column(String(60), ForeignKey('groups.id'), nullable=True)

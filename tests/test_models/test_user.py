@@ -61,7 +61,7 @@ class TestUser(unittest.TestCase):
         """Test string representation of User"""
         user = User()
         user.username = "testuser"
-        user.role = "Admin"
+        user.role = "MEMBER"
         expected = "<User testuser, Role: Admin>"
         self.assertEqual(str(user), expected)
 

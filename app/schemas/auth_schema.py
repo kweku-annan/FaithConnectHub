@@ -8,7 +8,7 @@ class RegisterSchema(Schema):
     email = fields.Email(required=True)
     username = fields.Str(required=True, validate=validate.Length(min=4, max=50))
     password = fields.Str(required=True, validate=validate.Length(min=6))
-    role = fields.Str(required=False, validate=validate.OneOf(['ADMIN', 'PASTOR', 'SUPER_ADMIN']))
+    role = fields.Str(required=False, validate=validate.OneOf(['ADMIN', 'PASTOR', 'MEMBER']))
 
     @pre_load
     def preprocess_data(self, data, **kwargs):
