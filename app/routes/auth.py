@@ -31,6 +31,7 @@ def register():
 
     user_dict = user[0].to_dict()
     username, email, role = user_dict['username'], user_dict['email'], user_dict['role']
+
     return jsonify({"Message": "Registered Successfully! Here are your details:", "username": username,
                     "email": email, "role": role}), 201
 
@@ -62,3 +63,4 @@ def protected():
     """Protected route that requires authentication"""
     current_user = get_jwt_identity()
     return jsonify({'message': f'Hello, {current_user['role']}! This is a restricted resource.'}), 200
+
