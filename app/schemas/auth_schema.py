@@ -8,7 +8,7 @@ class RegisterSchema(Schema):
     email = fields.Email(required=True)
     username = fields.Str(required=True, validate=validate.Length(min=4, max=50))
     password = fields.Str(required=True, validate=validate.Length(min=6))
-    role = fields.Str(required=False, validate=validate.OneOf(['Member', 'Admin', 'Pastor', 'Stuff', 'Super_admin']))
+    role = fields.Str(required=False, validate=validate.OneOf(['ADMIN', 'PASTOR', 'SUPER_ADMIN']))
 
 
 class LoginSchema(Schema):
@@ -21,7 +21,7 @@ class UserSchema(Schema):
     id = fields.Str(dump_only=True)
     email = fields.Email(required=True)
     username = fields.Str(required=True, validate=validate.Length(min=4, max=50))
-    role = fields.Str(required=False, validate=validate.OneOf(['Member', 'Admin', 'Pastor', 'Stuff', 'Super_admin']))
+    role = fields.Str(required=False, validate=validate.OneOf(['ADMIN', 'PASTOR', 'SUPER_ADMIN']))
     is_active = fields.Boolean(required=False)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)

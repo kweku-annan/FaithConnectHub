@@ -12,3 +12,10 @@ def role_required(allowed_roles):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+            current_user = get_jwt_identity()
+            if current_user and current_user['role'] in allowed_roles:
+                return func(*args, **kwargs)
+            return jsonify({"error": "Access forbidden: insufficient permissions"}), 403
+        return wrapper
+    return decorator
+
