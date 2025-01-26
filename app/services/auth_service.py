@@ -22,16 +22,23 @@ class AuthService:
         if not data['email'] or not data['password'] or not data['username']:
             return {'error': 'Missing email, password or username'}, 400
 
+        # Validate role
+        role = data.get('role')
+        if role and role.upper() not in ['ADMIN', 'PASTOR', 'SUPER_ADMIN']:
+            return {"error": "Invalid role"}, 400
+        if role:
+            data['role'] = role.upper()
+
         # Create new user
         user = User(
             email=data['email'],
             username=data['username'],
-            role=data.get('role', 'Member'),
+            role=data.get('role', 'ADMIN')
         )
         user.set_password(data['password'])
         user.save()
 
-        return {'message': 'User registered successfully'}, 201, user
+        return user, 201
 
     @staticmethod
     def authenticate_user(data):

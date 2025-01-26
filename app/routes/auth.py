@@ -4,12 +4,7 @@ Handles all user registration and login operations
 Contains the registration and authentication endpoints.
 """
 from flask import Blueprint, request, jsonify
-from sqlalchemy import or_
-from sqlalchemy.dialects.mssql.information_schema import schemata
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.models.user import User
-from app.models import storage
 from app.schemas.auth_schema import RegisterSchema, LoginSchema
 from app.services.auth_service import AuthService
 from app.utils.role_helper import role_required
@@ -23,7 +18,7 @@ def register():
     """
     data = request.get_json()
 
-    # Validate role
+    # Validate input
     schema = RegisterSchema()
     errors = schema.validate(data)
     if errors:
@@ -33,7 +28,11 @@ def register():
     user = AuthService.register_user(data)
     if not user:
         return jsonify({"message": "User with this email or username already exists"}), 400
-    return jsonify(user.to_dict()), 201
+
+    user_dict = user[0].to_dict()
+    username, email, role = user_dict['username'], user_dict['email'], user_dict['role']
+    return jsonify({"Message": "Registered Successfully! Here are your details:", "username": username,
+                    "email": email, "role": role}), 201
 
 
 # User Login Endpoint

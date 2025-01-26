@@ -15,7 +15,7 @@ class User(BaseModel, Base):
     username = Column(String(50), nullable=False, unique=True)
     email = Column(String(120), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
-    role = Column(String(20), nullable=False, default='Member')
+    role = Column(String(20), nullable=False, default='ADMIN')
     is_active = Column(Boolean, default=True)
     member_id = Column(String(60), ForeignKey('members.id'), nullable=True)
 
