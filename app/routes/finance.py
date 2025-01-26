@@ -11,7 +11,7 @@ finance_bp = Blueprint('finance', __name__)
 # Admin & Pastor: Create a financial record
 @finance_bp.route('/finance', methods=['POST'])
 @jwt_required()
-@role_required(['ADMIN', 'PASTOR'])
+@role_required(['ADMIN'])
 def create_financial_record():
     data = request.get_json()
     record = FinancialRecord(**data)
@@ -39,7 +39,7 @@ def get_financial_record(record_id):
 # Admin & Pastor: Update a financial record
 @finance_bp.route('/finance/<int:record_id>', methods=['PUT'])
 @jwt_required()
-@role_required(['ADMIN', 'PASTOR'])
+@role_required(['ADMIN'])
 def update_financial_record(record_id):
     record = storage.get(FinancialRecord, record_id)
     if not record:
@@ -55,7 +55,7 @@ def update_financial_record(record_id):
 # Admin & Pastor: Delete a financial record
 @finance_bp.route('/finance/<int:record_id>', methods=['DELETE'])
 @jwt_required()
-@role_required(['ADMIN', 'PASTOR'])
+@role_required(['ADMIN'])
 def delete_financial_record(record_id):
     record = storage.get(FinancialRecord, record_id)
     if not record:
