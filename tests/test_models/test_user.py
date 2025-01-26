@@ -15,7 +15,7 @@ class TestUser(unittest.TestCase):
         """Test password hashing and verification"""
         user = User()
         user.set_password('test123')
-        self.assertNotEqual(user.password_hash, 'test123')
+        self.assertNotEqual(user.password, 'test123')
         self.assertTrue(user.check_password('test123'))
         self.assertFalse(user.check_password('wrongpass'))
 

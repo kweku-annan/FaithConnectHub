@@ -19,7 +19,7 @@ class AuthService:
             return {'error': 'User with this username already exists'}, 400
 
         # Check for missing email, password or username
-        if not data['email'] or not data['password_hash'] or not data['username']:
+        if not data['email'] or not data['password'] or not data['username']:
             return {'error': 'Missing email, password or username'}, 400
 
         # Create new user
@@ -28,7 +28,7 @@ class AuthService:
             username=data['username'],
             role=data.get('role', 'Member'),
         )
-        user.set_password(data['password_hash'])
+        user.set_password(data['password'])
         storage.save(user)
 
         return {'message': 'User registered successfully'}, 201
@@ -40,6 +40,6 @@ class AuthService:
             or_(User.email == data['email'], User.username == data['email'])
         ).first()
 
-        if user and user.check_password(data['password_hash']):
+        if user and user.check_password(data['password']):
             return user
         return None

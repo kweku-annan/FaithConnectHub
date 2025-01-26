@@ -28,7 +28,7 @@ def register():
     if storage.query(User).filter_by(username=data['username']).first():
         return jsonify({'error': 'User with this username already exists'}), 400
 
-    if not data['email'] or not data['password_hash'] or not data['username']:
+    if not data['email'] or not data['password'] or not data['username']:
         return jsonify({'error': 'Missing email, password or username'}), 400
 
     # Create new user
@@ -37,8 +37,8 @@ def register():
         username=data['username'],
         role=data.get('role', 'Member'),
     )
-    user.set_password(data['password_hash'])
-    storage.save(user)
+    user.set_password(data['password'])
+    user.save()
 
     return jsonify({'message': 'User registered successfully'}), 201
 
@@ -51,7 +51,7 @@ def login():
     ).first()
 
     # Validate user credentials
-    if user and user.check_password(data['password_hash']):
+    if user and user.check_password(data['password']):
         access_token = create_access_token({"id": user.id, "role": user.role})
         return jsonify({'access_token': access_token}), 200
 

@@ -1,13 +1,49 @@
 #!/usr/bin/env python
 """Main Flask application entry point"""
-from flask import Flask
+from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
+from flask_marshmallow import Marshmallow
 from config import Config
-from app.routes.auth import auth_bp
 
-app = Flask(__name__)
-app.config.from_object(Config)
-app.register_blueprint(auth_bp, url_prefix="/auth")
+# Initialize extensions
+db = SQLAlchemy()
+ma = Marshmallow()
+jwt = JWTManager()
+
+def create_app():
+    """Creates and configures the Flask application"""
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    # Initialize extensions
+    db.init_app(app)
+    ma.init_app(app)
+    jwt.init_app(app)
+
+    # Register blueprints
+    from app.routes.auth import auth_bp
+    app.register_blueprint(auth_bp, url_prefix="/auth")
+
+    # Handle 404 errors
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({"error": "Not found"}), 404
+
+    # Handle other errors
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        return jsonify({"error": "Internal server error"}), 500
+
+    @app.route("/")
+    def home():
+        return jsonify({"message": "Welcome to FaithConnectHub! API"}), 200
+    return app
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app = create_app()
+    with app.app_context():
+        # Ensures database tables are created
+        db.create_all()
+    app.run(host="0.0.0.0", port=5000, debug=True)
