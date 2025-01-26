@@ -25,6 +25,11 @@ def create_app():
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
+    from app.routes.admin import admin_bp
+    app.register_blueprint(admin_bp, url_prefix="/resources")
+
+
+
     # Handle 404 errors
     @app.errorhandler(404)
     def not_found(error):

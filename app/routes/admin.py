@@ -6,7 +6,7 @@ from app.models import storage
 from flask_jwt_extended import jwt_required
 from app.utils.role_helper import role_required
 
-admin_bp = Blueprint('admin', __name__)
+admin_bp = Blueprint('resources', __name__)
 
 # Admin-only: Get all users
 @admin_bp.route('/users', methods=['GET'])
