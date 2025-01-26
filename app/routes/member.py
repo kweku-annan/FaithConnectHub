@@ -61,11 +61,15 @@ def manage_member(member_id):
         if request.method == 'PUT':
             # Handle profile update logic here
             data = request.get_json()
-            member = storage.get(Member, member_id)
-            if not member:
-                return jsonify({"error": "Member not found"}), 404
+            schema = MemberSchema(partial=True)  # Allow partial updates
+            try:
+                # Validate request data using schema
+                member = schema.load(data)
+            except ValidationError as err:
+                return jsonify({"errors": err.messages}), 400
+
             # Update member details
-            for key, value in data.items():
+            for key, value in member.items():
                 setattr(member, key, value)
             member.save()
             return jsonify(member.to_dict()), 200
