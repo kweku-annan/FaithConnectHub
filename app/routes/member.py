@@ -5,6 +5,8 @@ from app.models.member import Member
 from app.models import storage
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.utils.role_helper import role_required
+from marshmallow import ValidationError
+from app.schemas.member_schema import MemberSchema
 
 members_bp = Blueprint('members', __name__)
 
@@ -24,9 +26,18 @@ def get_all_members():
 def create_member():
     """Creates a new member"""
     data = request.get_json()
+    schema = MemberSchema()
+
+    try:
+        # Validate request data using schema
+        member = schema.load(data)
+    except ValidationError as err:
+        return jsonify({"errors": err.messages}), 400
+
     member = Member(**data)
     member.save()
     return jsonify(member.to_dict()), 201
+
 
 # Member: View or update their own  profile
 @members_bp.route('/members/<int:member_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -40,6 +51,7 @@ def manage_member(member_id):
         if current_user['role'] == 'MEMBER' and current_user['id'] != member_id:
             return jsonify({"error": "Access forbidden: you can only manage your own profile"}), 403
 
+        # Handle profile view logic here
         if request.method == 'GET':
             member = storage.get(Member, member_id)
             if not member:
