@@ -38,3 +38,31 @@ def get_user(user_id):
     if not user:
         return jsonify({"error": "User not found"}), 404
     return jsonify(user.to_dict()), 200
+
+# Admin & Pastor: Update a user
+@admin_bp.route('/users/<int:user_id>', methods=['PUT'])
+@jwt_required()
+@role_required(['ADMIN'])
+def update_user(user_id):
+    """Updates a user"""
+    user = storage.get(User, user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    data = request.get_json()
+    for key, value in data.items():
+        setattr(user, key, value)
+    user.save()
+    return jsonify(user.to_dict()), 200
+
+# Admin & Pastor: Delete a user
+@admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
+@jwt_required()
+@role_required(['ADMIN'])
+def delete_user(user_id):
+    """Deletes a user"""
+    user = storage.get(User, user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    user.delete()
+    return jsonify({}), 204
+
