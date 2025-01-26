@@ -14,7 +14,7 @@ class Attendance(BaseModel, Base):
 
     member_id = Column(String(60), ForeignKey('members.id'), nullable=True)
     event_id = Column(String(60), ForeignKey('events.id'), nullable=False)
-    status = Column(String(50), nullable=False, default='Present')
+    status = Column(String(50), nullable=False, default='PRESENT')
     remarks = Column(Text, nullable=True)
     date = Column(Date, nullable=False, default=datetime.now)
     is_guest = Column(Boolean, nullable=False, default=False) # True if the attendee is a guest

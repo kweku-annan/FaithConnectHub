@@ -23,9 +23,14 @@ def create_app():
 
     # Register blueprints
     from app.routes.auth import auth_bp
+    from app.routes.admin import admin_bp
+    from app.routes.department import department_bp
+    from app.routes.group import group_bp
+    from app.routes.member import members_bp
+    from app.routes.event import events_bp
+    from app.routes.attendance import attendance_bp
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
-    from app.routes.admin import admin_bp
     app.register_blueprint(admin_bp, url_prefix="/resources")
 
 
