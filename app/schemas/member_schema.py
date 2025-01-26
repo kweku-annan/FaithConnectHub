@@ -1,3 +1,5 @@
+#!usr/bin/python3
+"""Defines the schema for member input data validation"""
 from marshmallow import Schema, fields, validates, ValidationError
 from datetime import datetime
 from app.models.member import Member
