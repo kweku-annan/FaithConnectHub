@@ -41,7 +41,7 @@ def create_member():
 
 
 # Member: View or update their own  profile
-@members_bp.route('/members/<int:member_id>', methods=['GET', 'PUT', 'DELETE'])
+@members_bp.route('/members/<string:member_id>', methods=['GET', 'PUT', 'DELETE'])
 @jwt_required()
 @role_required(['MEMBER', 'ADMIN', 'PASTOR'])
 def manage_member(member_id):
