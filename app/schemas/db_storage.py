@@ -88,12 +88,15 @@ class DBStorage:
 
     def get(self, cls, id):
         """Returns an object based on the class name and id"""
-        if cls is not None and type(cls) is str and id is not None and type(id) is str and cls in classes:
-            cls = classes[cls]
-            obj = self.__session.query(cls).filter(cls.id == id).first()
-            return obj
-        else:
+        if cls not in classes.values():
             return None
+
+        all_cls = self.all(cls)
+        for value in all_cls.values():
+            if value.id == id:
+                return value
+
+        return None
 
     def query(self, cls):
         """Returns a query object"""

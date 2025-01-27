@@ -34,5 +34,5 @@ class Config:
     # Flask-specific settings
     SECRET_KEY = os.getenv("SECRET_KEY")
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-    JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour
+    JWT_ACCESS_TOKEN_EXPIRES = 28800  # 8 hour
     DEBUG = True

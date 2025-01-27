@@ -15,7 +15,7 @@ class TestUser(unittest.TestCase):
         """Test password hashing and verification"""
         user = User()
         user.set_password('test123')
-        self.assertNotEqual(user.password_hash, 'test123')
+        self.assertNotEqual(user.password, 'test123')
         self.assertTrue(user.check_password('test123'))
         self.assertFalse(user.check_password('wrongpass'))
 
@@ -61,7 +61,7 @@ class TestUser(unittest.TestCase):
         """Test string representation of User"""
         user = User()
         user.username = "testuser"
-        user.role = "Admin"
+        user.role = "MEMBER"
         expected = "<User testuser, Role: Admin>"
         self.assertEqual(str(user), expected)
 

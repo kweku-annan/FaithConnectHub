@@ -14,10 +14,10 @@ class User(BaseModel, Base):
 
     username = Column(String(50), nullable=False, unique=True)
     email = Column(String(120), nullable=False, unique=True)
-    password_hash = Column(String(255), nullable=False)
-    role = Column(String(20), nullable=False, default='Member')
+    password = Column(String(255), nullable=False)
+    role = Column(String(20), nullable=False, default='MEMBER')
     is_active = Column(Boolean, default=True)
-    member_id = Column(String(60), ForeignKey('members.id'), nullable=False)
+    member_id = Column(String(60), ForeignKey('members.id'), nullable=True)
 
 
     # Relationships
@@ -30,11 +30,11 @@ class User(BaseModel, Base):
         self.role = self.role or 'Member'
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password = generate_password_hash(password)
 
     def check_password(self, password):
         """"""
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password, password)
 
     @staticmethod
     def check_duplicate_username(username):

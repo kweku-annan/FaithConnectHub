@@ -5,7 +5,7 @@ from app.models.user import User
 member = Member(
     first_name="John",
     last_name="Doe",
-    email="john.doe3@example.com",
+    email="john.doe99@example.com",
     role="Leader",
     phone_number="+233554957158",
     address="1234 Main Street, Accra, Ghana",
@@ -16,8 +16,8 @@ member = Member(
 )
 member.save()
 
-user = User(username="admin0", email="admin0@example.com", role="Admin0", member_id=member.id)
-user.set_password("adminPassword0")
+user = User(username="admin99", email="admin99@example.com", role="Admin99")
+user.set_password("adminPassword99")
 user.save()
 
 print(storage.query(User).all())
