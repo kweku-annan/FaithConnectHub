@@ -1,6 +1,6 @@
 #!usr/bin/python3
 """Defines the schema for member input data validation"""
-from marshmallow import Schema, fields, validates, ValidationError
+from marshmallow import Schema, fields, validates, ValidationError, pre_load
 from datetime import datetime
 from app.models.member import Member
 from app.models import storage
@@ -94,6 +94,37 @@ class MemberSchema(Schema):
     )
     department_id = fields.String(required=False, allow_none=True)
     group_id = fields.String(required=False, allow_none=True)
+
+    @pre_load
+    def normalize_inputs(self, data, **kwargs):
+        """Normalize specific string inputs that require selection from a list"""
+        selective_fields = ['gender', 'marital_status', 'status', 'role']
+        for field in selective_fields:
+            if field in data and isinstance(data[field], str):
+                # Normalize the input to lowercase
+                normalized_value = data[field].lower()
+
+                # Get the allowed values for the field
+                allowed_values = self.get_allowed_values(field)
+
+                # Check if the normalized value is in the allowed values
+                if normalized_value in [value.lower() for value in allowed_values]:
+                    data[field] = allowed_values[[value.lower() for value in allowed_values].index(normalized_value)]
+                else:
+                    raise ValidationError(f"Invalid value for {field}. Allowed values are {', '.join(allowed_values)}.")
+
+        return data
+
+    def get_allowed_values(self, field):
+        """Get allowed values for a specific field"""
+        allowed_values = {
+            'gender': ['male', 'female'],
+            'marital_status': ['single', 'married', 'divorced', 'widowed'],
+            'status': ['active', 'inactive', 'suspended'],
+            'role': ['MEMBER', 'ADMIN', 'PASTOR']
+        }
+        return allowed_values.get(field, [])
+
 
     @validates('email')
     def validate_unique_email(self, email):
