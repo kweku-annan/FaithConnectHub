@@ -3,7 +3,7 @@
 from app.models.association_tables import member_department, member_group
 from app.models.base_model import BaseModel, Base
 from datetime import datetime
-from sqlalchemy import Column, String, ForeignKey, DateTime
+from sqlalchemy import Column, String, ForeignKey, DateTime, Date
 from sqlalchemy.orm import relationship
 
 
@@ -24,7 +24,7 @@ class Member(BaseModel, Base):
     # Church Information
     status = Column(String(20), nullable=False, default='active')  # active, inactive, suspended
     role = Column(String(20), nullable=False, default='Member')  # member, admin, pastor
-    date_joined = Column(DateTime, nullable=False)
+    date_joined = Column(Date, nullable=False)
     department_id = Column(String(60), ForeignKey('departments.id'), nullable=True)
     group_id = Column(String(60), ForeignKey('groups.id'), nullable=True)
 

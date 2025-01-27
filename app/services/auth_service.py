@@ -47,7 +47,8 @@ class AuthService:
         ).first()
 
         if user and user.check_password(data['password']):
-            access_token = create_access_token(identity={"id": user.id, "role": user.role},
-                                               expires_delta=timedelta(hours=8))
+            access_token = create_access_token(
+                identity={"id": user.id, "role": user.role},
+                expires_delta=timedelta(hours=8), additional_headers={"typ": "JWT"})
             return access_token
         return None

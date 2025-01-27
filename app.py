@@ -16,11 +16,6 @@ def create_app():
     app = Flask(__name__)
 
     app.config.from_object(Config)
-    app.config['JWT_SECRET_KEY'] = Config.SECRET_KEY
-    app.config['JWT_TOKEN_LOCATION'] = ['headers']
-    app.config['JWT_HEADER_NAME'] = 'Authorization'
-    app.config['JWT_HEADER_TYPE'] = 'Bearer'
-
 
     # Initialize extensions
     db.init_app(app)
