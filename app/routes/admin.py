@@ -15,7 +15,11 @@ admin_bp = Blueprint('resources', __name__)
 def get_all_users():
     """Retrieves all users"""
     users = storage.all(User)
-    return jsonify([user.to_dict() for user in users]), 200
+    all_users = [users[user].to_dict() for user in users]
+    for user in all_users:
+        del user['password']
+        del user['__class__']
+    return jsonify(all_users), 200
 
 # Admin-only: Create a new user
 @admin_bp.route('/users', methods=['POST'])

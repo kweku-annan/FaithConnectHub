@@ -17,7 +17,6 @@ members_bp = Blueprint('members', __name__)
 def get_all_members():
     """Retrieves all members"""
     members = storage.all(Member)
-    print(type(members))
     return jsonify([members[member].to_dict() for member in members]), 200
 
 # Admin & Pastor: Create a new member
