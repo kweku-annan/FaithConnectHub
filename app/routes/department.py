@@ -32,7 +32,7 @@ def create_department():
     return jsonify(department.to_dict()), 201
 
 # Admin & Pastor: View a single department
-@department_bp.route('/departments/<int:department_id>', methods=['GET'])
+@department_bp.route('/departments/<string:department_id>', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR', 'MEMBER'])
 def get_department(department_id):
@@ -43,7 +43,7 @@ def get_department(department_id):
     return jsonify(department.to_dict()), 200
 
 # Admin & Pastor: Update a department
-@department_bp.route('/departments/<int:department_id>', methods=['PUT'])
+@department_bp.route('/departments/<string:department_id>', methods=['PUT'])
 @jwt_required()
 @role_required(['ADMIN'])
 def update_department(department_id):
@@ -58,7 +58,7 @@ def update_department(department_id):
     return jsonify(department.to_dict()), 200
 
 # Admin: Delete a department
-@department_bp.route('/departments/<int:department_id>', methods=['DELETE'])
+@department_bp.route('/departments/<string:department_id>', methods=['DELETE'])
 @jwt_required()
 @role_required(['ADMIN'])
 def delete_department(department_id):
@@ -71,7 +71,7 @@ def delete_department(department_id):
     return jsonify({}), 204
 
 # Admin & Pastor: Get all members in a department
-@department_bp.route('/departments/<int:department_id>/members', methods=['GET'])
+@department_bp.route('/departments/<string:department_id>/members', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def get_department_members(department_id):
@@ -82,7 +82,7 @@ def get_department_members(department_id):
     return jsonify([member.to_dict() for member in department.members]), 200
 
 # Admin & Pastor: Add a member to a department
-@department_bp.route('/departments/<int:department_id>/members', methods=['POST'])
+@department_bp.route('/departments/<string:department_id>/members', methods=['POST'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def add_member_to_department(department_id):
@@ -99,7 +99,7 @@ def add_member_to_department(department_id):
     return jsonify(department.to_dict()), 201
 
 # Admin & Pastor: Remove a member from a department
-@department_bp.route('/departments/<int:department_id>/members/<int:member_id>', methods=['DELETE'])
+@department_bp.route('/departments/<string:department_id>/members/<string:member_id>', methods=['DELETE'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def remove_member_from_department(department_id, member_id):
@@ -115,7 +115,7 @@ def remove_member_from_department(department_id, member_id):
     return jsonify({}), 204
 
 # Admin: Register a group for a department
-@department_bp.route('/departments/<int:department_id>/groups', methods=['POST'])
+@department_bp.route('/departments/<string:department_id>/groups', methods=['POST'])
 @jwt_required()
 @role_required(['ADMIN'])
 def register_group_for_department(department_id):
@@ -133,7 +133,7 @@ def register_group_for_department(department_id):
     return jsonify(department.to_dict()), 201
 
 # Admin: Unregister a group from a department
-@department_bp.route('/departments/<int:department_id>/groups/<int:group_id>', methods=['DELETE'])
+@department_bp.route('/departments/<string:department_id>/groups/<string:group_id>', methods=['DELETE'])
 @jwt_required()
 @role_required(['ADMIN'])
 def unregister_group_from_department(department_id, group_id):
@@ -150,7 +150,7 @@ def unregister_group_from_department(department_id, group_id):
     return jsonify({}), 204
 
 # Admin & Pastor: Get all groups in a department
-@department_bp.route('/departments/<int:department_id>/groups', methods=['GET'])
+@department_bp.route('/departments/<string:department_id>/groups', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def get_department_groups(department_id):
@@ -161,7 +161,7 @@ def get_department_groups(department_id):
     return jsonify([group.to_dict() for group in department.group]), 200
 
 # Admin & Pastor: Get all members in a group in a department
-@department_bp.route('/departments/<int:department_id>/groups/<int:group_id>/members', methods=['GET'])
+@department_bp.route('/departments/<string:department_id>/groups/<string:group_id>/members', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def get_department_group_members(department_id, group_id):
@@ -176,7 +176,7 @@ def get_department_group_members(department_id, group_id):
     return jsonify([member.to_dict() for member in group.members]), 200
 
 # Admin & Pastor: Add a member to a group in a department
-@department_bp.route('/departments/<int:department_id>/groups/<int:group_id>/members', methods=['POST'])
+@department_bp.route('/departments/<string:department_id>/groups/<string:group_id>/members', methods=['POST'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def add_member_to_group_in_department(department_id, group_id):
@@ -197,7 +197,7 @@ def add_member_to_group_in_department(department_id, group_id):
 
 # Admin & Pastor: Remove a member from a group in a department
 @department_bp.route(
-    '/departments/<int:department_id>/groups/<int:group_id>/members/<int:member_id>', methods=['DELETE']
+    '/departments/<string:department_id>/groups/<string:group_id>/members/<string:member_id>', methods=['DELETE']
 )
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])

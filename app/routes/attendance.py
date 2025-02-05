@@ -50,7 +50,7 @@ def create_attendance():
     return jsonify(attendance.to_dict()), 201
 
 # Admin & Pastor: View a single attendance record
-@attendance_bp.route('/attendance/<int:attendance_id>', methods=['GET'])
+@attendance_bp.route('/attendance/<string:attendance_id>', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def get_attendance(attendance_id):
@@ -62,7 +62,7 @@ def get_attendance(attendance_id):
     return jsonify(attendance.to_dict()), 200
 
 # Admin & Pastor: Update an attendance record
-@attendance_bp.route('/attendance/<int:attendance_id>', methods=['PUT'])
+@attendance_bp.route('/attendance/<string:attendance_id>', methods=['PUT'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def update_attendance(attendance_id):
@@ -79,7 +79,7 @@ def update_attendance(attendance_id):
     return jsonify(attendance.to_dict()), 200
 
 # Admin & Pastor: Delete an attendance record
-@attendance_bp.route('/attendance/<int:attendance_id>', methods=['DELETE'])
+@attendance_bp.route('/attendance/<string:attendance_id>', methods=['DELETE'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def delete_attendance(attendance_id):
@@ -92,7 +92,7 @@ def delete_attendance(attendance_id):
     return jsonify({}), 204
 
 # Admin & Pastor: Get all attendance records for a specific event
-@attendance_bp.route('/attendance/event/<int:event_id>', methods=['GET'])
+@attendance_bp.route('/attendance/event/<string:event_id>', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def get_attendance_by_event(event_id):
@@ -104,7 +104,7 @@ def get_attendance_by_event(event_id):
     return jsonify([record.to_dict() for record in attendance_records]), 200
 
 # Admin & Pastor: Get all attendance records for a specific member
-@attendance_bp.route('/attendance/member/<int:member_id>', methods=['GET'])
+@attendance_bp.route('/attendance/member/<string:member_id>', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def get_attendance_by_member(member_id):

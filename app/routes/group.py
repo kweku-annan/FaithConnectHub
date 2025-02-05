@@ -31,7 +31,7 @@ def create_group():
     return jsonify(group.to_dict()), 201
 
 # Admin & Pastor: View a single group
-@group_bp.route('/groups/<int:group_id>', methods=['GET'])
+@group_bp.route('/groups/<string:group_id>', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def get_group(group_id):
@@ -42,7 +42,7 @@ def get_group(group_id):
     return jsonify(group.to_dict()), 200
 
 # Admin & Pastor: Update a group
-@group_bp.route('/groups/<int:group_id>', methods=['PUT'])
+@group_bp.route('/groups/<string:group_id>', methods=['PUT'])
 @jwt_required()
 @role_required(['ADMIN'])
 def update_group(group_id):
@@ -57,7 +57,7 @@ def update_group(group_id):
     return jsonify(group.to_dict()), 200
 
 # Admin: Delete a group
-@group_bp.route('/groups/<int:group_id>', methods=['DELETE'])
+@group_bp.route('/groups/<string:group_id>', methods=['DELETE'])
 @jwt_required()
 @role_required(['ADMIN'])
 def delete_group(group_id):
@@ -71,7 +71,7 @@ def delete_group(group_id):
     return jsonify({group.to_dict}), 200
 
 # Admin & Pastor: Add a member to a group
-@group_bp.route('/groups/<int:group_id>/users/<int:member_id>', methods=['POST'])
+@group_bp.route('/groups/<string:group_id>/users/<string:member_id>', methods=['POST'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def add_member_to_group(group_id, member_id):
@@ -87,7 +87,7 @@ def add_member_to_group(group_id, member_id):
     return jsonify(group.to_dict()), 200
 
 # Admin & Pastor: Remove a member from a group
-@group_bp.route('/groups/<int:group_id>/users/<int:member_id>', methods=['DELETE'])
+@group_bp.route('/groups/<string:group_id>/users/<string:member_id>', methods=['DELETE'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def remove_member_from_group(group_id, member_id):
@@ -103,7 +103,7 @@ def remove_member_from_group(group_id, member_id):
     return jsonify({}), 200
 
 # Admin & Pastor: Get all members in a group
-@group_bp.route('/groups/<int:group_id>/users', methods=['GET'])
+@group_bp.route('/groups/<string:group_id>/users', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def get_group_members(group_id):

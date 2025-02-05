@@ -27,7 +27,7 @@ def get_all_financial_records():
     return jsonify([record.to_dict() for record in records]), 200
 
 # Admin & Pastor: View a single financial record
-@finance_bp.route('/finance/<int:record_id>', methods=['GET'])
+@finance_bp.route('/finance/<string:record_id>', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def get_financial_record(record_id):
@@ -37,7 +37,7 @@ def get_financial_record(record_id):
     return jsonify(record.to_dict()), 200
 
 # Admin & Pastor: Update a financial record
-@finance_bp.route('/finance/<int:record_id>', methods=['PUT'])
+@finance_bp.route('/finance/<string:record_id>', methods=['PUT'])
 @jwt_required()
 @role_required(['ADMIN'])
 def update_financial_record(record_id):
@@ -53,7 +53,7 @@ def update_financial_record(record_id):
     return jsonify(record.to_dict()), 200
 
 # Admin & Pastor: Delete a financial record
-@finance_bp.route('/finance/<int:record_id>', methods=['DELETE'])
+@finance_bp.route('/finance/<string:record_id>', methods=['DELETE'])
 @jwt_required()
 @role_required(['ADMIN'])
 def delete_financial_record(record_id):

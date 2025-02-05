@@ -30,10 +30,12 @@ def create_user():
     data = request.get_json()
     user = User(**data)
     user.save()
-    return jsonify(user.to_dict()), 201
+    new_user = user.to_dict()
+    del new_user['password']
+    return jsonify(new_user), 201
 
 # Admin & Pastor: View a single user
-@admin_bp.route('/users/<int:user_id>', methods=['GET'])
+@admin_bp.route('/users/<string:user_id>', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def get_user(user_id):
@@ -44,7 +46,7 @@ def get_user(user_id):
     return jsonify(user.to_dict()), 200
 
 # Admin & Pastor: Update a user
-@admin_bp.route('/users/<int:user_id>', methods=['PUT'])
+@admin_bp.route('/users/<string:user_id>', methods=['PUT'])
 @jwt_required()
 @role_required(['ADMIN'])
 def update_user(user_id):
@@ -55,11 +57,13 @@ def update_user(user_id):
     data = request.get_json()
     for key, value in data.items():
         setattr(user, key, value)
-    user.save()
-    return jsonify(user.to_dict()), 200
+    updated_user = User(**user)
+    user.delete()
+    updated_user.save()
+    return jsonify(updated_user.to_dict()), 200
 
 # Admin & Pastor: Delete a user
-@admin_bp.route('/users/<int:user_id>', methods=['DELETE'])
+@admin_bp.route('/users/<string:user_id>', methods=['DELETE'])
 @jwt_required()
 @role_required(['ADMIN'])
 def delete_user(user_id):

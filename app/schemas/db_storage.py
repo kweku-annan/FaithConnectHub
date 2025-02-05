@@ -48,7 +48,7 @@ class DBStorage:
         if not self.__session:
             self.reload()
         if type(cls) == str:
-            cls = classes.get[cls, None]
+            cls = classes.get(cls, None)
         if cls:
             for obj in self.__session.query(cls):
                 key = f"{type(obj).__name__}.{obj.id}"
@@ -114,5 +114,7 @@ class DBStorage:
             for cls in classes.values():
                 total += self.__session.query(cls).count()
         return total
+
+
 
 

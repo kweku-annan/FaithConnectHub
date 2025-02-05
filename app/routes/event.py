@@ -27,7 +27,7 @@ def get_all_events():
     return jsonify([event.to_dict() for event in events]), 200
 
 # All roles: View a single event
-@events_bp.route('/events/<int:event_id>', methods=['GET'])
+@events_bp.route('/events/<string:event_id>', methods=['GET'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR', 'MEMBER'])
 def get_event(event_id):
@@ -38,7 +38,7 @@ def get_event(event_id):
     return jsonify(event.to_dict()), 200
 
 # Admin & Pastor: Update an event
-@events_bp.route('/events/<int:event_id>', methods=['PUT'])
+@events_bp.route('/events/<string:event_id>', methods=['PUT'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def update_event(event_id):
@@ -52,7 +52,7 @@ def update_event(event_id):
     return jsonify(event.to_dict()), 200
 
 # Admin & Pastor: Delete an event
-@events_bp.route('/events/<int:event_id>', methods=['DELETE'])
+@events_bp.route('/events/<string:event_id>', methods=['DELETE'])
 @jwt_required()
 @role_required(['ADMIN', 'PASTOR'])
 def delete_event(event_id):
@@ -63,7 +63,7 @@ def delete_event(event_id):
     return jsonify({"message": "Event deleted successfully"}), 200
 
 # Member, Admin, & Pastor: Register for an event
-@events_bp.route('/events/<int:event_id>/register', methods=['POST'])
+@events_bp.route('/events/<string:event_id>/register', methods=['POST'])
 @jwt_required()
 @role_required(['MEMBER', 'ADMIN', 'PASTOR'])
 def register_for_event(event_id):
