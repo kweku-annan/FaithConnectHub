@@ -1,10 +1,16 @@
 #!/usr/bin/python3
 """Defines RBAC for Users table"""
 from flask import jsonify, request, Blueprint
+from marshmallow import ValidationError
+
 from app.models.user import User
 from app.models import storage
 from flask_jwt_extended import jwt_required
+
+
+from app.services.auth_service import AuthService
 from app.utils.role_helper import role_required
+from app.schemas.auth_schema import RegisterSchema
 
 admin_bp = Blueprint('resources', __name__)
 
@@ -28,11 +34,22 @@ def get_all_users():
 def create_user():
     """Creates a new user"""
     data = request.get_json()
-    user = User(**data)
-    user.save()
-    new_user = user.to_dict()
-    del new_user['password']
-    return jsonify(new_user), 201
+
+    # Validate input
+    schema = RegisterSchema()
+    errors = schema.validate(data)
+    if errors:
+        return jsonify({"errors": errors}), 400
+
+    user = AuthService.register_user(data)
+
+    if not user:
+        return jsonify({"message": "User with this email or username already exists"}), 400
+
+    user_dict = user[0].to_dict()
+    username, email, role, id = user_dict['username'], user_dict['email'], user_dict['role'], user_dict['id']
+    return jsonify({"Message": "Registered Successfully! Here are your details:", "username": username, "id": id,
+                    "email": email, "role": role}), 201
 
 # Admin & Pastor: View a single user
 @admin_bp.route('/users/<string:user_id>', methods=['GET'])
@@ -43,6 +60,7 @@ def get_user(user_id):
     user = storage.get(User, user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
+    del user.password
     return jsonify(user.to_dict()), 200
 
 # Admin & Pastor: Update a user
@@ -51,16 +69,22 @@ def get_user(user_id):
 @role_required(['ADMIN'])
 def update_user(user_id):
     """Updates a user"""
-    user = storage.get(User, user_id)
-    if not user:
-        return jsonify({"error": "User not found"}), 404
     data = request.get_json()
-    for key, value in data.items():
-        setattr(user, key, value)
-    updated_user = User(**user)
-    user.delete()
-    updated_user.save()
-    return jsonify(updated_user.to_dict()), 200
+    schema = RegisterSchema(partial=True) # Allow partial updates
+
+    try:
+        # Validate request data using schema
+        validated_data = schema.load(data)
+        user = storage.get(User, user_id)
+
+        # Update user details
+        for key, value in validated_data.items():
+            setattr(user, key, value)
+
+        user.save()
+        return jsonify(user.to_dict()), 200
+    except ValidationError as err:
+        return jsonify({"errors": err.messages}), 400
 
 # Admin & Pastor: Delete a user
 @admin_bp.route('/users/<string:user_id>', methods=['DELETE'])

@@ -1,0 +1,64 @@
+Core Features
+1. **User Authentication and Role Management**
+   - Secure login system with roles like Admin, Pastor, Member, etc. (User login/logout functionality.)
+   - Role Management and Authorization
+	Assigns roles to users (e.g., Admin, Pastor, Member).
+	Controls access to specific features or resources based on the
+	user’s role. Ensures that users can only perform actions or access
+        resources permitted for their role.
+   - Registration (Admin adds users initially; future self-registration optional).
+   - Password recovery/reset functionality.
+   - Multi-factor authentication for enhanced security.
+
+2. **Member Management**
+   - Add, edit, and delete member profiles.
+   - Member directory with searchable profiles.
+   - Maintain basic and detailed records for each member.
+   - Associate members with specific departments/ministries/groups.
+   - Role and Status Management:
+     -- Categorize members by roles (e.g., Pastor, Member, Leader).
+     -- Track membership status (active, inactive, new, transferred).
+   - Engagement Tracking:
+     -- Record participation in events, programs, or groups.
+   - Reporting and Insights:
+     -- Generate lists or statistics (e.g., number of active members, distribution by department).
+
+
+3. **Event and Calendar Management**
+   - Create and manage events with details like name, date, and location.
+   - Track attendance by linking attendees (members or guests).
+   - Categorize events by type (e.g., service, workshop).
+   - Send notifications to members about events. (Save for later development)
+
+4.  **Financial Management**
+   - Track church Income (Income Management)
+      -- Track donations, tithes, offerings, and other sources of income.
+      -- Categorize income by type (e.g., general offering, building fund, mission donations).
+      -- Allow recording of donor details (optional for anonymity).
+   - Expense Management
+      -- Track expenditures by category (e.g., salaries, maintenance, events).
+      -- Record the purpose and amount for each expense.
+      -- Associate expenses with specific events, departments, or projects.
+   - Generate financial reports and statements.
+
+5. **Attendance Tracking**
+   - Track attendance for services, events, or small group meetings.
+   - Engagement Analysis: Identify highly engaged members and those who need encouragement.
+   - Reporting: Provide insights such as attendance trends, average attendance, and demographic participation.
+
+6. **Communication Tools**
+   - Send bulk emails or SMS to members.
+   - Create announcements for upcoming events or services.
+
+7. **Department Management**
+   - Creating, editing, and deleting departments/units/ministries.
+   - Assigning leaders and tracking members for each department.
+   - Tracking activities, events, and reports for specific ministries.
+
+8. **Small Group Management**
+   - Create and manage small group meetings.
+ 
+
+10. **Mobile App Support**
+   - RESTful API to support future development of a mobile app.
+

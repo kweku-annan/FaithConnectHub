@@ -141,9 +141,10 @@ class MemberSchema(Schema):
     @validates('phone_number')
     def validate_phone_number(self, phone_number):
         """Ensure phone number format (basic check, add custom logic if needed)"""
-        if not phone_number.isdigit():
+        if not phone_number:
             raise ValidationError("Phone number must contain only digits.")
         if len(phone_number) < 10:
             raise ValidationError("Phone number must be at least 10 digits long.")
 
 
+6
